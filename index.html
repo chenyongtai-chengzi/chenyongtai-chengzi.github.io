@@ -1710,6 +1710,7 @@
 
     // ========== HOVER PREVIEW ==========
     function previewPhoto(chapterIdx, photoIdx) {
+      currentPhotoIndex = photoIdx;
       const p = projects[chapterIdx];
       const photo = p.photos[photoIdx];
       const img = document.getElementById('photoImg');
