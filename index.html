@@ -36,9 +36,9 @@
     /* Mobile: allow scroll for stacked layout */
     @media (max-width: 900px) {
       body { overflow-y: auto; height: auto; }
-      #cover { min-height: auto; position: relative; inset: auto; height: auto; }
-      .cover-left { height: auto; }
-      .cover-right { height: auto; }
+      #cover { min-height: 100vh; position: relative; inset: auto; height: auto; flex-direction: column; }
+      .cover-left { width: 100%; height: auto; flex: 1; min-height: 0; padding: 28px 24px; background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 30%, #121830 60%, #1a2a50 100%); }
+      .cover-right { width: 100%; height: auto; min-height: 0; flex-shrink: 0; }
       #chapter { min-height: 100vh; position: relative; transform: none; }
       #chapter.visible { transform: none; }
       .chapter-right-top { min-height: 300px; }
@@ -937,10 +937,7 @@
     }
 
     @media (max-width: 900px) {
-      /* Cover: stack vertically */
-      #cover { flex-direction: column; }
-      .cover-left { width: 100%; height: auto; min-height: 55vh; padding: 28px 24px; background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 30%, #121830 60%, #1a2a50 100%); }
-      .cover-right { width: 100%; height: auto; min-height: 0; flex-shrink: 0; }
+      /* Cover: stack vertically - handled in base mobile section */
 
       /* Film strip: horizontal on mobile */
       .film-strip-inner {
@@ -1030,8 +1027,7 @@
 
     @media (max-width: 600px) {
       /* Cover mobile */
-      .cover-left { padding: 20px 16px; min-height: 50vh; }
-      .cover-right { height: auto; }
+      .cover-left { padding: 20px 16px; }
       .cover-title h1 { font-size: 52px; letter-spacing: -2px; }
       .cover-title h1 .year { font-size: 60px; letter-spacing: -3px; -webkit-text-stroke-width: 2px; }
       .cover-title .divider { width: 50px; margin: 14px 0; }
