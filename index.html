@@ -955,23 +955,24 @@
       .chapter-right { width: 100%; height: auto; flex-direction: column; }
       .chapter-right-top { flex-direction: column; min-height: 300px; }
 
-      /* Thumb strip: horizontal at bottom on mobile */
+      /* Thumb strip: horizontal at bottom on mobile, square thumbnails */
       .thumb-strip {
         width: 100% !important;
         height: auto !important;
         flex-direction: row !important;
         overflow-x: auto !important;
         overflow-y: hidden !important;
-        padding: 6px 10px !important;
-        gap: 6px !important;
+        padding: 8px 10px !important;
+        gap: 8px !important;
         border-left: none !important;
         border-top: 1px solid rgba(255,255,255,0.06) !important;
         flex-shrink: 0 !important;
         -webkit-overflow-scrolling: touch;
+        background: #080808;
       }
       .thumb-frame {
         flex-shrink: 0;
-        width: 64px !important;
+        width: 60px !important;
         margin-bottom: 0 !important;
         opacity: 0.4;
       }
@@ -981,17 +982,11 @@
         transform: scale(1.05);
       }
       .thumb-frame img {
-        aspect-ratio: 3/2;
+        aspect-ratio: 1/1;
+        border-radius: 2px;
       }
-      .thumb-sprocket {
-        flex-direction: row !important;
-        padding: 2px 3px !important;
-      }
-      .thumb-sprocket-hole {
-        width: 3px !important;
-        height: 3px !important;
-      }
-      .thumb-label { font-size: 6px !important; padding: 1px 0 !important; }
+      .thumb-sprocket { display: none !important; }
+      .thumb-label { display: none !important; }
 
       /* Photo main takes remaining space */
       .photo-main { min-height: 200px; }
@@ -1042,29 +1037,30 @@
       .stamp-circle { width: 36px; height: 36px; font-size: 7px; }
       .spot-label { font-size: 8px; }
 
-      /* Thumb strip on small mobile: horizontal row */
+      /* Thumb strip on small mobile: horizontal row, square */
       .thumb-strip {
         width: 100% !important;
         height: auto !important;
         flex-direction: row !important;
         overflow-x: auto !important;
         overflow-y: hidden !important;
-        padding: 4px 8px !important;
-        gap: 4px !important;
+        padding: 6px 8px !important;
+        gap: 6px !important;
         border-left: none !important;
         border-top: 1px solid rgba(255,255,255,0.06) !important;
         -webkit-overflow-scrolling: touch;
+        background: #080808;
       }
       .thumb-frame {
         flex-shrink: 0;
-        width: 52px !important;
+        width: 48px !important;
         margin-bottom: 0 !important;
         opacity: 0.4;
       }
       .thumb-frame.active { opacity: 1; transform: scale(1.05); }
-      .thumb-sprocket { flex-direction: row !important; padding: 1px 2px !important; }
-      .thumb-sprocket-hole { width: 3px !important; height: 2px !important; }
-      .thumb-label { font-size: 5px !important; padding: 1px 0 !important; }
+      .thumb-frame img { aspect-ratio: 1/1; border-radius: 2px; }
+      .thumb-sprocket { display: none !important; }
+      .thumb-label { display: none !important; }
       .photo-dots { display: flex !important; }
 
       /* Contact bar mobile */
@@ -1139,6 +1135,13 @@
       border-radius: 4px; transition: all 0.2s;
     }
     .auth-box .auth-btn:hover { background: #6a9ad0; color: #fff; }
+    .auth-box .auth-cancel {
+      width: 100%; padding: 8px; font-family: var(--mono);
+      font-size: 9px; letter-spacing: 1px; border: none;
+      background: transparent; color: #555; cursor: pointer;
+      margin-top: 8px; transition: color 0.2s;
+    }
+    .auth-box .auth-cancel:hover { color: #999; }
     .auth-box .auth-error {
       font-family: var(--mono); font-size: 9px; color: #c44536;
       margin-top: 10px; min-height: 14px;
@@ -1199,6 +1202,7 @@
         <p>请输入管理密码以进入编辑模式</p>
         <input type="password" id="authPassword" placeholder="••••••" autocomplete="off" />
         <button class="auth-btn" onclick="verifyPassword()">验证</button>
+        <button class="auth-cancel" onclick="cancelAuth()">取消</button>
         <div class="auth-error" id="authError"></div>
       </div>
       <div class="auth-step" id="authStep2">
@@ -1209,6 +1213,7 @@
         </div>
         <input type="password" id="authToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
         <button class="auth-btn" onclick="submitToken()">确认</button>
+        <button class="auth-cancel" onclick="cancelAuth()">取消</button>
         <div class="auth-error" id="tokenError"></div>
       </div>
     </div>
@@ -1859,6 +1864,10 @@
       btn.classList.add('active');
       btn.textContent = '✎ 编辑中';
       showToast('已进入编辑模式', 'success');
+    }
+
+    function cancelAuth() {
+      document.getElementById('authModal').classList.remove('active');
     }
 
     function openEditPanel(projectIdx) {
