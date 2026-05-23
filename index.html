@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PORTFOLIO — 个人作品集</title>
+  <title>橙子一人作品集</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -36,7 +36,7 @@
     /* Mobile: allow scroll for stacked layout */
     @media (max-width: 900px) {
       body { overflow-y: auto; height: auto; }
-      #cover { min-height: 100vh; }
+      #cover { min-height: auto; }
       #chapter { min-height: 100vh; position: relative; transform: none; }
       #chapter.visible { transform: none; }
       .chapter-right-top { min-height: 300px; }
@@ -938,7 +938,7 @@
       /* Cover: stack vertically */
       #cover { flex-direction: column; }
       .cover-left { width: 100%; height: auto; min-height: 55vh; padding: 28px 24px; background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 30%, #121830 60%, #1a2a50 100%); }
-      .cover-right { width: 100%; height: auto; min-height: 0; }
+      .cover-right { width: 100%; height: auto; min-height: 0; flex-shrink: 0; }
 
       /* Film strip: horizontal on mobile */
       .film-strip-inner {
@@ -1289,14 +1289,14 @@
   <div id="cover">
     <div class="cover-left">
       <div class="top-bar">
-        <span class="title-label">PORTFOLIO 2026 • WORKS</span>
+        <span class="title-label">橙子一人作品集 • 2026</span>
         <span class="roll-label">ROLL 01 • COVER</span>
       </div>
 
       <div class="cover-title">
         <h1>WORKS <span class="year">2026</span></h1>
         <div class="divider"></div>
-        <div class="subtitle">作品集 • 二〇二六</div>
+        <div class="subtitle">橙子一人作品集 • 二〇二六</div>
         <div class="subtitle-en">a roll exposed across creative fields —</div>
       </div>
 
@@ -1340,7 +1340,7 @@
 
       <div class="chapter-stamps">
         <div class="stamp-circle" id="stampYear">2026</div>
-        <div class="spot-label">SPOT • PORTFOLIO 2026</div>
+        <div class="spot-label">SPOT • 橙子一人作品集</div>
       </div>
     </div>
 
