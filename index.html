@@ -937,7 +937,8 @@
     }
 
     @media (max-width: 900px) {
-      /* Cover: stack vertically - handled in base mobile section */
+      /* Cover: stack vertically */
+      .cover-right { overflow: visible !important; }
 
       /* Film strip: horizontal on mobile */
       .film-strip-inner {
@@ -970,8 +971,7 @@
       .top-bar { margin-bottom: 32px; }
       .cover-index { margin-top: 24px; }
       .index-row { padding: 10px 12px; font-size: 10px; }
-      .film-strip-inner { padding: 0 24px; }
-      .film-header { padding: 8px 24px; }
+      .film-header { padding: 8px 16px; }
       .dev-info { display: none; }
 
       /* Chapter: stack vertically */
