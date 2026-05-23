@@ -1629,15 +1629,13 @@
       const indexEl = document.getElementById('coverIndex');
       const stripEl = document.getElementById('filmStrip');
 
-      // Show years on cover
-      const years = [...new Set(projects.map(p => p.date.split('.')[0]))].map(y => '20' + y);
-      const uniqueYears = [...new Set(years)];
-      if (uniqueYears.length === 0) uniqueYears.push('2026');
-      indexEl.innerHTML = uniqueYears.map((y, i) => `
+      // Show years on cover - all projects are 2026
+      const yearList = ['2026'];
+      indexEl.innerHTML = yearList.map((y, i) => `
         <div class="index-row" onclick="openYearPage('${y}')" data-year="${y}">
           <span class="num">${String(i + 1).padStart(2, '0')}</span>
           <span class="name">${y}</span>
-          <span class="tag">${projects.filter(p => '20' + p.date.split('.')[0] === y).length} WORKS</span>
+          <span class="tag">${projects.length} WORKS</span>
         </div>
       `).join('');
 
@@ -1650,14 +1648,11 @@
       inner.innerHTML = '';
 
       // Show year covers on film strip
-      const years = [...new Set(projects.map(p => p.date.split('.')[0]))].map(y => '20' + y);
-      const uniqueYears = [...new Set(years)];
-      if (uniqueYears.length === 0) uniqueYears.push('2026');
-      uniqueYears.forEach((y, i) => {
-        const yearProjects = projects.filter(p => '20' + p.date.split('.')[0] === y);
+      yearList.forEach((y, i) => {
         const frame = document.createElement('div');
         frame.className = 'film-frame';
         frame.dataset.year = y;
+        const coverImg = projects[0] ? projects[0].coverUrl : '';
         frame.innerHTML = `
           <div class="sprocket-row">
             ${Array(14).fill('<div class="sprocket"></div>').join('')}
@@ -1665,17 +1660,17 @@
           <div class="film-edge-text">KODAK PORTRA 400</div>
           <div class="frame-overlay">
             <span class="frame-num">${String(i + 1).padStart(2, '0')}</span>
-            <span class="frame-location">${p.name}</span>
+            <span class="frame-location">${y}</span>
           </div>
-          <img src="${p.coverUrl}" alt="${p.name}" loading="lazy" />
+          <img src="${coverImg}" alt="${y}" loading="lazy" />
           <div class="sprocket-row">
             ${Array(14).fill('<div class="sprocket"></div>').join('')}
           </div>
-          <div class="frame-exp">EXP ${p.date} • ${p.tag}</div>
+          <div class="frame-exp">EXP ${y} • ${projects.length} WORKS</div>
         `;
-        frame.addEventListener('click', () => openChapter(i));
+        frame.addEventListener('click', () => openYearPage(y));
         frame.addEventListener('mouseenter', () => {
-          document.getElementById('hoverStatus').textContent = `NOW HOVERING • ${p.name}`;
+          document.getElementById('hoverStatus').textContent = `NOW HOVERING • ${y}`;
           highlightRow(i);
         });
         frame.addEventListener('mouseleave', () => {
@@ -1685,7 +1680,7 @@
         inner.appendChild(frame);
       });
 
-      document.getElementById('frameCount').textContent = String(uniqueYears.length).padStart(2, '0');
+      document.getElementById('frameCount').textContent = String(yearList.length).padStart(2, '0');
     }
 
     // ========== NAVIGATION ==========
@@ -2341,7 +2336,7 @@
       document.getElementById('yearSubtitle').textContent = 'PROJECTS • 分类浏览';
       document.getElementById('yearRollLabel').textContent = 'ROLL 01 • ' + year;
 
-      const yearProjects = projects.filter(p => '20' + p.date.split('.')[0] === year);
+      const yearProjects = year === '2026' ? projects : projects.filter(p => '20' + p.date.split('.')[0] === year);
       const indexEl = document.getElementById('yearIndex');
       indexEl.innerHTML = yearProjects.map((p, i) => {
         const origIdx = projects.indexOf(p);
