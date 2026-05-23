@@ -1592,6 +1592,79 @@
       margin-right: 8px;
     }
 
+
+    /* ========== COVER COLLAGE ========== */
+    .cover-collage {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 3px;
+      padding: 3px;
+      background: #080808;
+    }
+    .cover-collage-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .cover-collage-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: sepia(0.1) contrast(1.05);
+      transition: filter 0.3s, transform 0.4s;
+    }
+    .cover-collage-item:hover img {
+      filter: sepia(0) contrast(1.1);
+      transform: scale(1.05);
+    }
+    .cover-collage-item .collage-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 6px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.6);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .cover-collage-item:hover .collage-label {
+      opacity: 1;
+    }
+    .cover-collage-item:nth-child(1) {
+      grid-row: 1 / 3;
+      grid-column: 1 / 2;
+    }
+    .cover-collage-item:nth-child(2) {
+      grid-row: 1 / 2;
+      grid-column: 2 / 4;
+    }
+    .cover-collage-item:nth-child(3) {
+      grid-row: 2 / 3;
+      grid-column: 2 / 3;
+    }
+    .cover-collage-item:nth-child(4) {
+      grid-row: 2 / 3;
+      grid-column: 3 / 4;
+    }
+    .cover-collage-item:nth-child(5) {
+      grid-row: 3 / 4;
+      grid-column: 1 / 3;
+    }
+    .cover-collage-item:nth-child(6) {
+      grid-row: 3 / 4;
+      grid-column: 3 / 4;
+    }
+    .cover-collage-item:nth-child(7) {
+      grid-row: 3 / 4;
+      grid-column: 3 / 4;
+    }
+
   </style>
 </head>
 <body>
@@ -1683,9 +1756,9 @@
 
     <div class="cover-right" id="filmStrip">
       <div class="film-header">
-        PORTFOLIO-25-R1 • KODAK PORTRA 400 • <span id="frameCount">07</span> OF 36
+        PORTFOLIO-26-R1 • KODAK PORTRA 400 • <span id="frameCount">07</span> EXPOSURES
       </div>
-      <div class="hover-status" id="hoverStatus"></div>
+      <div class="cover-collage" id="coverCollage"></div>
     </div>
   </div>
 
@@ -2073,7 +2146,6 @@
     // ========== BUILD COVER ==========
     function buildCover() {
       const indexEl = document.getElementById('coverIndex');
-      const stripEl = document.getElementById('filmStrip');
 
       // Show years on cover - all projects are 2026
       const yearList = ['2026'];
@@ -2085,51 +2157,24 @@
         </div>
       `).join('');
 
-      let inner = stripEl.querySelector('.film-strip-inner');
-      if (!inner) {
-        inner = document.createElement('div');
-        inner.className = 'film-strip-inner';
-        stripEl.insertBefore(inner, document.getElementById('hoverStatus'));
-      }
-      inner.innerHTML = '';
-
-      // Show year covers on film strip
-      yearList.forEach((y, i) => {
-        const frame = document.createElement('div');
-        frame.className = 'film-frame';
-        frame.dataset.year = y;
-        const coverImg = projects[0] ? projects[0].coverUrl : '';
-        frame.innerHTML = `
-          <div class="sprocket-row">
-            ${Array(14).fill('<div class="sprocket"></div>').join('')}
-          </div>
-          <div class="film-edge-text">KODAK PORTRA 400</div>
-          <div class="frame-overlay">
-            <span class="frame-num">${String(i + 1).padStart(2, '0')}</span>
-            <span class="frame-location">${y}</span>
-          </div>
-          <img src="${coverImg}" alt="${y}" loading="lazy" />
-          <div class="sprocket-row">
-            ${Array(14).fill('<div class="sprocket"></div>').join('')}
-          </div>
-          <div class="frame-exp">EXP ${y} • ${projects.length} WORKS</div>
+      // Build collage from all project covers
+      const collage = document.getElementById('coverCollage');
+      collage.innerHTML = '';
+      projects.forEach((p, i) => {
+        const item = document.createElement('div');
+        item.className = 'cover-collage-item';
+        item.innerHTML = `
+          <img src="${p.coverUrl}" alt="${p.name}" loading="lazy" />
+          <div class="collage-label">${String(i + 1).padStart(2, '0')} ${p.name}</div>
         `;
-        frame.addEventListener('click', () => openYearPage(y));
-        frame.addEventListener('mouseenter', () => {
-          document.getElementById('hoverStatus').textContent = `NOW HOVERING • ${y}`;
-          highlightRow(i);
-        });
-        frame.addEventListener('mouseleave', () => {
-          document.getElementById('hoverStatus').textContent = '';
-          unhighlightRow();
-        });
-        inner.appendChild(frame);
+        item.addEventListener('click', () => openYearPage('2026'));
+        collage.appendChild(item);
       });
 
-      document.getElementById('frameCount').textContent = String(yearList.length).padStart(2, '0');
+      document.getElementById('frameCount').textContent = String(projects.length).padStart(2, '0');
     }
 
-    // ========== NAVIGATION ==========
+        // ========== NAVIGATION ==========
     function enterRoll() { openYearPage('2026'); }
 
     function openChapter(idx) {
