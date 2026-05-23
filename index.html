@@ -1037,6 +1037,78 @@
     @media (hover: none) {
       .photo-dots { display: flex !important; }
     }
+
+    /* ========== PASSWORD MODAL ========== */
+    .auth-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(6px);
+    }
+    .auth-modal.active { opacity: 1; pointer-events: all; }
+    .auth-box {
+      background: #111; border: 1px solid #333; border-radius: 8px;
+      padding: 32px; width: 340px; max-width: 90vw;
+      text-align: center;
+    }
+    .auth-box h4 {
+      font-family: var(--mono); font-size: 12px; letter-spacing: 2px;
+      color: #6a9ad0; margin-bottom: 8px;
+    }
+    .auth-box p {
+      font-family: var(--sans); font-size: 12px; color: #888;
+      margin-bottom: 20px;
+    }
+    .auth-box input {
+      width: 100%; padding: 10px 14px; background: #1a1a1a;
+      border: 1px solid #333; color: #eee; font-family: var(--mono);
+      font-size: 13px; border-radius: 4px; outline: none;
+      text-align: center; letter-spacing: 3px; margin-bottom: 16px;
+    }
+    .auth-box input:focus { border-color: #6a9ad0; }
+    .auth-box .auth-btn {
+      width: 100%; padding: 10px; font-family: var(--mono);
+      font-size: 10px; letter-spacing: 2px; border: 1px solid #6a9ad0;
+      background: transparent; color: #6a9ad0; cursor: pointer;
+      border-radius: 4px; transition: all 0.2s;
+    }
+    .auth-box .auth-btn:hover { background: #6a9ad0; color: #fff; }
+    .auth-box .auth-error {
+      font-family: var(--mono); font-size: 9px; color: #c44536;
+      margin-top: 10px; min-height: 14px;
+    }
+    .auth-box .auth-step { display: none; }
+    .auth-box .auth-step.active { display: block; }
+    .auth-box .token-hint {
+      font-family: var(--sans); font-size: 10px; color: #666;
+      margin-bottom: 12px; line-height: 1.5; text-align: left;
+    }
+    .auth-box .token-hint a { color: #6a9ad0; text-decoration: none; }
+    .auth-box .token-hint a:hover { text-decoration: underline; }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      z-index: 400; font-family: var(--mono); font-size: 11px;
+      letter-spacing: 1px; padding: 10px 24px; border-radius: 4px;
+      color: #fff; opacity: 0; transition: opacity 0.3s, top 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; top: 30px; }
+    .toast.success { background: #2d6a4f; }
+    .toast.error { background: #c44536; }
+    .toast.info { background: #1a3a5c; }
+
+    /* Upload progress */
+    .upload-progress {
+      position: fixed; bottom: 60px; left: 20px; z-index: 250;
+      font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+      color: #6a9ad0; display: none;
+    }
+    .upload-progress.active { display: block; }
+
   </style>
 </head>
 <body>
@@ -1053,6 +1125,36 @@
 
   <!-- Edit Toggle -->
   <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✎ 编辑</button>
+
+
+  <!-- Auth Modal -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-box">
+      <div class="auth-step active" id="authStep1">
+        <h4>🔒 管理员验证</h4>
+        <p>请输入管理密码以进入编辑模式</p>
+        <input type="password" id="authPassword" placeholder="••••••" autocomplete="off" />
+        <button class="auth-btn" onclick="verifyPassword()">验证</button>
+        <div class="auth-error" id="authError"></div>
+      </div>
+      <div class="auth-step" id="authStep2">
+        <h4>🔑 GitHub 令牌</h4>
+        <div class="token-hint">
+          需要GitHub Personal Access Token来保存数据。<br/>
+          <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank">点击创建Token</a>，勾选 <b>repo</b> 权限。
+        </div>
+        <input type="password" id="authToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+        <button class="auth-btn" onclick="submitToken()">确认</button>
+        <div class="auth-error" id="tokenError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Upload progress -->
+  <div class="upload-progress" id="uploadProgress">⏳ 上传中...</div>
 
   <!-- Edit Panel -->
   <div class="edit-panel" id="editPanel">
@@ -1621,16 +1723,78 @@
     let editMode = false;
     let editingProjectIdx = -1;
     let pendingUploadTarget = null; // { type: 'cover'|'photo', projectIdx, photoIdx }
+    let ghToken = sessionStorage.getItem('gh_token') || '';
 
     function toggleEditMode() {
-      editMode = !editMode;
-      document.body.classList.toggle('edit-mode', editMode);
-      const btn = document.getElementById('editToggle');
-      btn.classList.toggle('active', editMode);
-      btn.textContent = editMode ? '✎ 编辑中' : '✎ 编辑';
-      if (!editMode) {
+      if (editMode) {
+        editMode = false;
+        document.body.classList.remove('edit-mode');
+        const btn = document.getElementById('editToggle');
+        btn.classList.remove('active');
+        btn.textContent = '✎ 编辑';
         document.getElementById('editPanel').classList.remove('open');
+        return;
       }
+      // Show auth modal
+      document.getElementById('authModal').classList.add('active');
+      document.getElementById('authStep1').classList.add('active');
+      document.getElementById('authStep2').classList.remove('active');
+      document.getElementById('authPassword').value = '';
+      document.getElementById('authError').textContent = '';
+      document.getElementById('authPassword').focus();
+    }
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(() => { t.className = 'toast'; }, 3000);
+    }
+
+    async function verifyPassword() {
+      const pwd = document.getElementById('authPassword').value;
+      const hash = await sha256(pwd);
+      const correctHash = await sha256('030911');
+      if (hash === correctHash) {
+        document.getElementById('authStep1').classList.remove('active');
+        document.getElementById('authStep2').classList.add('active');
+        document.getElementById('tokenError').textContent = '';
+        if (ghToken) {
+          enterEditMode();
+          return;
+        }
+        document.getElementById('authToken').focus();
+      } else {
+        document.getElementById('authError').textContent = '密码错误';
+      }
+    }
+
+    function submitToken() {
+      const token = document.getElementById('authToken').value.trim();
+      if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+        document.getElementById('tokenError').textContent = 'Token格式不正确，应以 ghp_ 或 github_pat_ 开头';
+        return;
+      }
+      ghToken = token;
+      sessionStorage.setItem('gh_token', token);
+      enterEditMode();
+    }
+
+    function enterEditMode() {
+      document.getElementById('authModal').classList.remove('active');
+      editMode = true;
+      document.body.classList.add('edit-mode');
+      const btn = document.getElementById('editToggle');
+      btn.classList.add('active');
+      btn.textContent = '✎ 编辑中';
+      showToast('已进入编辑模式', 'success');
     }
 
     function openEditPanel(projectIdx) {
@@ -1689,48 +1853,68 @@
       input.click();
     }
 
-    document.getElementById('fileInput').addEventListener('change', function(e) {
+    document.getElementById('fileInput').addEventListener('change', async function(e) {
       const file = e.target.files[0];
       if (!file || !pendingUploadTarget) return;
 
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const dataUrl = ev.target.result;
-        const { type, projectIdx, photoIdx } = pendingUploadTarget;
-
+      const { type, projectIdx, photoIdx } = pendingUploadTarget;
+      try {
         if (type === 'cover') {
-          projects[projectIdx].coverUrl = dataUrl;
-          // Update preview in edit panel
+          let imageUrl;
+          if (ghToken) {
+            const ext = file.name.split('.').pop() || 'jpg';
+            const filename = Date.now() + '_' + Math.random().toString(36).substring(2,6) + '.' + ext;
+            const base64Data = await fileToBase64(file);
+            imageUrl = await uploadImageToGitHub(base64Data, filename);
+          } else {
+            imageUrl = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = ev => resolve(ev.target.result);
+              reader.readAsDataURL(file);
+            });
+          }
+          projects[projectIdx].coverUrl = imageUrl;
           const preview = document.querySelector('#editPanel .photo-thumb-preview');
-          if (preview) preview.src = dataUrl;
+          if (preview) preview.src = imageUrl;
         } else if (type === 'photo') {
           const isVideo = file.type.startsWith('video/');
-          projects[projectIdx].photos[photoIdx].url = dataUrl;
+          let imageUrl;
+          if (ghToken && !isVideo) {
+            const ext = file.name.split('.').pop() || 'jpg';
+            const filename = Date.now() + '_' + Math.random().toString(36).substring(2,6) + '.' + ext;
+            const base64Data = await fileToBase64(file);
+            imageUrl = await uploadImageToGitHub(base64Data, filename);
+          } else {
+            imageUrl = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = ev => resolve(ev.target.result);
+              reader.readAsDataURL(file);
+            });
+          }
+          projects[projectIdx].photos[photoIdx].url = imageUrl;
           if (isVideo) {
             projects[projectIdx].photos[photoIdx].type = 'video';
-            projects[projectIdx].photos[photoIdx].videoUrl = dataUrl;
+            projects[projectIdx].photos[photoIdx].videoUrl = imageUrl;
           } else {
             projects[projectIdx].photos[photoIdx].type = 'image';
             projects[projectIdx].photos[photoIdx].videoUrl = '';
           }
-          // Update preview in edit panel
           const items = document.querySelectorAll('#editPanel .photo-edit-item');
-          if (items[photoIdx + 1]) { // +1 because first item is cover
+          if (items[photoIdx + 1]) {
             const img = items[photoIdx + 1].querySelector('.photo-thumb-preview');
-            if (img) img.src = dataUrl;
+            if (img) img.src = imageUrl;
           }
         }
 
-        // Save to localStorage
         saveToStorage();
-        // Rebuild cover to reflect changes
         buildCover();
-        // If chapter is open, refresh it
         if (currentChapter === projectIdx) {
           openChapter(projectIdx);
         }
-      };
-      reader.readAsDataURL(file);
+        showToast('上传成功', 'success');
+      } catch(err) {
+        showToast('上传失败: ' + err.message, 'error');
+      }
     });
 
     function saveEdit() {
@@ -1764,8 +1948,126 @@
       location.reload();
     }
 
+    // ========== GITHUB API ==========
+    const GH_OWNER = 'chenyongtai-chengzi';
+    const GH_REPO = 'chenyongtai-chengzi.github.io';
+    const GH_BRANCH = 'main';
+    const GH_API = 'https://api.github.com';
+
+    async function githubApi(method, path, body = null) {
+      const opts = {
+        method,
+        headers: {
+          'Authorization': 'token ' + ghToken,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(GH_API + path, opts);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'GitHub API error: ' + res.status);
+      }
+      return res.json();
+    }
+
+    async function uploadImageToGitHub(base64Data, filename) {
+      const progress = document.getElementById('uploadProgress');
+      progress.classList.add('active');
+      try {
+        let sha = null;
+        try {
+          const info = await githubApi('GET', '/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/images/' + filename);
+          sha = info.sha;
+        } catch(e) {}
+
+        const body = {
+          message: 'Upload image: ' + filename,
+          branch: GH_BRANCH,
+          content: base64Data
+        };
+        if (sha) body.sha = sha;
+
+        await githubApi('PUT', '/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/images/' + filename, body);
+        return 'https://raw.githubusercontent.com/' + GH_OWNER + '/' + GH_REPO + '/' + GH_BRANCH + '/images/' + filename;
+      } finally {
+        progress.classList.remove('active');
+      }
+    }
+
+    async function saveProjectsToGitHub() {
+      const progress = document.getElementById('uploadProgress');
+      progress.classList.add('active');
+      try {
+        const data = projects.map(p => ({
+          id: p.id, name: p.name, nameCn: p.nameCn, date: p.date,
+          tag: p.tag, color: p.color, desc: p.desc,
+          timeline: p.timeline, quote: p.quote, coverUrl: p.coverUrl,
+          photos: p.photos.map(ph => ({
+            url: ph.url, time: ph.time, caption: ph.caption,
+            location: ph.location, type: ph.type || 'image',
+            videoUrl: ph.videoUrl || ''
+          }))
+        }));
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+        let sha = null;
+        try {
+          const info = await githubApi('GET', '/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/data.json');
+          sha = info.sha;
+        } catch(e) {}
+
+        const body = {
+          message: 'Update portfolio data',
+          branch: GH_BRANCH,
+          content: content
+        };
+        if (sha) body.sha = sha;
+
+        await githubApi('PUT', '/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/data.json', body);
+        showToast('数据已保存到GitHub', 'success');
+      } catch(e) {
+        showToast('保存失败: ' + e.message, 'error');
+      } finally {
+        progress.classList.remove('active');
+      }
+    }
+
+    async function loadProjectsFromGitHub() {
+      try {
+        const info = await githubApi('GET', '/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/data.json');
+        const content = decodeURIComponent(escape(atob(info.content)));
+        const data = JSON.parse(content);
+        data.forEach((d, i) => {
+          if (projects[i]) {
+            Object.assign(projects[i], d);
+          }
+        });
+        return true;
+      } catch(e) {
+        return false;
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     // ========== LOCAL STORAGE ==========
     function saveToStorage() {
+      // Save to GitHub if token available
+      if (ghToken) {
+        saveProjectsToGitHub();
+      }
+      // Also keep localStorage as fallback
       const data = {};
       projects.forEach((p, i) => {
         const saved = {};
@@ -1793,7 +2095,13 @@
       }
     }
 
-    function loadFromStorage() {
+    async function loadFromStorage() {
+      // Try GitHub first if token available
+      if (ghToken) {
+        const loaded = await loadProjectsFromGitHub();
+        if (loaded) return;
+      }
+      // Fallback to localStorage
       try {
         const saved = JSON.parse(localStorage.getItem('portfolio_projects') || '{}');
         for (const [idx, data] of Object.entries(saved)) {
@@ -1806,8 +2114,15 @@
     }
 
     // ========== INIT ==========
-    loadFromStorage();
-    buildCover();
+    loadFromStorage().then(() => buildCover());
+
+    // Auth modal keyboard support
+    document.getElementById('authPassword').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') verifyPassword();
+    });
+    document.getElementById('authToken').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitToken();
+    });
 
     // Edit mode click handlers
     document.getElementById('cover').addEventListener('click', function(e) {
