@@ -1022,6 +1022,14 @@
       .thumb-strip { width: 56px; }
     }
 
+
+      /* Year page mobile */
+      #yearPage { position: relative !important; inset: auto !important; height: auto !important; flex-direction: column !important; transform: none !important; opacity: 1 !important; display: none; }
+      #yearPage.visible { display: flex; }
+      .year-left { width: 100% !important; height: auto !important; min-height: 60vh; padding: 28px 24px; }
+      .year-right { width: 100% !important; height: auto !important; overflow: visible !important; }
+      .year-title h1 { font-size: 52px; letter-spacing: -2px; }
+
     @media (max-width: 600px) {
       /* Cover mobile */
       .cover-left { padding: 20px 16px; }
@@ -1222,6 +1230,64 @@
     }
     .upload-progress.active { display: block; }
 
+
+    /* ========== YEAR PAGE ========== */
+    #yearPage {
+      position: fixed; inset: 0; z-index: 9;
+      display: flex;
+      background: var(--dark);
+      transform: translateX(100%);
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+      opacity: 0;
+    }
+    #yearPage.visible {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    .year-left {
+      width: 55%; height: 100%;
+      display: flex; flex-direction: column;
+      padding: 48px 56px;
+      background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 25%, #121830 50%, #1a2a50 75%, #2a4a7a 100%);
+      position: relative;
+    }
+    .year-top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.3); margin-bottom: 48px;
+    }
+    .year-back-btn {
+      cursor: pointer; color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .year-back-btn:hover { color: #fff; }
+    .year-title {
+      margin-bottom: 8px;
+    }
+    .year-title h1 {
+      font-family: var(--sans); font-size: 80px; font-weight: 900;
+      letter-spacing: -4px; line-height: 0.9;
+      color: var(--white);
+    }
+    .year-title .divider {
+      width: 80px; height: 2px;
+      background: var(--orange); margin: 20px 0;
+    }
+    .year-title .subtitle {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.4);
+    }
+    .year-index {
+      flex: 1; display: flex; flex-direction: column; gap: 0;
+      margin-top: 32px; overflow-y: auto;
+    }
+    .year-right {
+      width: 45%; height: 100%;
+      background: var(--dark);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
   </style>
 </head>
 <body>
@@ -1309,6 +1375,29 @@
         PORTFOLIO-25-R1 • KODAK PORTRA 400 • <span id="frameCount">07</span> OF 36
       </div>
       <div class="hover-status" id="hoverStatus"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== YEAR PAGE ==================== -->
+  <div id="yearPage">
+    <div class="year-left">
+      <div class="year-top-bar">
+        <span class="year-back-btn" onclick="closeYearPage()">← 返回</span>
+        <span class="roll-label" id="yearRollLabel">ROLL 01 • 2026</span>
+      </div>
+      <div class="year-title">
+        <h1 id="yearTitle">2026</h1>
+        <div class="divider"></div>
+        <div class="subtitle" id="yearSubtitle">PROJECTS • 分类浏览</div>
+      </div>
+      <div class="year-index" id="yearIndex"></div>
+    </div>
+    <div class="year-right" id="yearFilmStrip">
+      <div class="film-header" id="yearFilmHeader">
+        PORTFOLIO-26-R1 • KODAK PORTRA 400 • <span id="yearFrameCount">07</span> OF 36
+      </div>
+      <div class="hover-status" id="yearHoverStatus"></div>
     </div>
   </div>
 
@@ -1540,12 +1629,15 @@
       const indexEl = document.getElementById('coverIndex');
       const stripEl = document.getElementById('filmStrip');
 
-      indexEl.innerHTML = projects.map((p, i) => `
-        <div class="index-row" onclick="openChapter(${i})" data-idx="${i}"
-             onmouseenter="highlightFrame(${i})" onmouseleave="unhighlightFrame()">
+      // Show years on cover
+      const years = [...new Set(projects.map(p => p.date.split('.')[0]))].map(y => '20' + y);
+      const uniqueYears = [...new Set(years)];
+      if (uniqueYears.length === 0) uniqueYears.push('2026');
+      indexEl.innerHTML = uniqueYears.map((y, i) => `
+        <div class="index-row" onclick="openYearPage('${y}')" data-year="${y}">
           <span class="num">${String(i + 1).padStart(2, '0')}</span>
-          <span class="name">${p.name}</span>
-          <span class="tag">2026</span>
+          <span class="name">${y}</span>
+          <span class="tag">${projects.filter(p => '20' + p.date.split('.')[0] === y).length} WORKS</span>
         </div>
       `).join('');
 
@@ -1557,10 +1649,15 @@
       }
       inner.innerHTML = '';
 
-      projects.forEach((p, i) => {
+      // Show year covers on film strip
+      const years = [...new Set(projects.map(p => p.date.split('.')[0]))].map(y => '20' + y);
+      const uniqueYears = [...new Set(years)];
+      if (uniqueYears.length === 0) uniqueYears.push('2026');
+      uniqueYears.forEach((y, i) => {
+        const yearProjects = projects.filter(p => '20' + p.date.split('.')[0] === y);
         const frame = document.createElement('div');
         frame.className = 'film-frame';
-        frame.dataset.idx = i;
+        frame.dataset.year = y;
         frame.innerHTML = `
           <div class="sprocket-row">
             ${Array(14).fill('<div class="sprocket"></div>').join('')}
@@ -1588,11 +1685,11 @@
         inner.appendChild(frame);
       });
 
-      document.getElementById('frameCount').textContent = String(projects.length).padStart(2, '0');
+      document.getElementById('frameCount').textContent = String(uniqueYears.length).padStart(2, '0');
     }
 
     // ========== NAVIGATION ==========
-    function enterRoll() { openChapter(0); }
+    function enterRoll() { openYearPage('2026'); }
 
     function openChapter(idx) {
       currentChapter = idx;
@@ -1649,8 +1746,13 @@
 
     function goBack() {
       currentChapter = -1;
-      document.getElementById('cover').classList.remove('hidden');
       document.getElementById('chapter').classList.remove('visible');
+      // If year page is open, go back to year page; otherwise go to cover
+      if (document.getElementById('yearPage').classList.contains('visible')) {
+        // Already on year page, just close chapter
+      } else {
+        document.getElementById('cover').classList.remove('hidden');
+      }
       // Mobile: scroll to top
       if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -2229,6 +2331,92 @@
           }
         }
       } catch(e) {}
+    }
+
+
+    // ========== YEAR PAGE ==========
+    function openYearPage(year) {
+      const yearPage = document.getElementById('yearPage');
+      document.getElementById('yearTitle').textContent = year;
+      document.getElementById('yearSubtitle').textContent = 'PROJECTS • 分类浏览';
+      document.getElementById('yearRollLabel').textContent = 'ROLL 01 • ' + year;
+
+      const yearProjects = projects.filter(p => '20' + p.date.split('.')[0] === year);
+      const indexEl = document.getElementById('yearIndex');
+      indexEl.innerHTML = yearProjects.map((p, i) => {
+        const origIdx = projects.indexOf(p);
+        return `
+          <div class="index-row" onclick="openChapterFromYear(${origIdx})" data-idx="${origIdx}"
+               onmouseenter="highlightYearFrame(${i})" onmouseleave="unhighlightYearFrame()">
+            <span class="num">${String(i + 1).padStart(2, '0')}</span>
+            <span class="name">${p.name}</span>
+            <span class="tag">${p.tag}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Build film strip for year page
+      const stripEl = document.getElementById('yearFilmStrip');
+      let inner = stripEl.querySelector('.film-strip-inner');
+      if (!inner) {
+        inner = document.createElement('div');
+        inner.className = 'film-strip-inner';
+        stripEl.insertBefore(inner, document.getElementById('yearHoverStatus'));
+      }
+      inner.innerHTML = '';
+      yearProjects.forEach((p, i) => {
+        const frame = document.createElement('div');
+        frame.className = 'film-frame';
+        frame.dataset.idx = i;
+        frame.innerHTML = `
+          <div class="sprocket-row">
+            ${Array(14).fill('<div class="sprocket"></div>').join('')}
+          </div>
+          <div class="frame-overlay">
+            <span class="frame-num">${String(i + 1).padStart(2, '0')}</span>
+            <span class="frame-location">${p.name}</span>
+          </div>
+          <img src="${p.coverUrl}" alt="${p.name}" loading="lazy" />
+          <div class="sprocket-row">
+            ${Array(14).fill('<div class="sprocket"></div>').join('')}
+          </div>
+          <div class="frame-exp">EXP ${p.date} • ${p.tag}</div>
+        `;
+        const origIdx = projects.indexOf(p);
+        frame.addEventListener('click', () => openChapterFromYear(origIdx));
+        frame.addEventListener('mouseenter', () => {
+          document.getElementById('yearHoverStatus').textContent = `NOW HOVERING • ${p.name}`;
+        });
+        frame.addEventListener('mouseleave', () => {
+          document.getElementById('yearHoverStatus').textContent = '';
+        });
+        inner.appendChild(frame);
+      });
+
+      document.getElementById('yearFrameCount').textContent = String(yearProjects.length).padStart(2, '0');
+
+      yearPage.classList.add('visible');
+      // Mobile: scroll to top
+      if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeYearPage() {
+      document.getElementById('yearPage').classList.remove('visible');
+    }
+
+    function openChapterFromYear(idx) {
+      openChapter(idx);
+    }
+
+    function highlightYearFrame(idx) {
+      document.querySelectorAll('#yearFilmStrip .film-frame').forEach((f, i) => {
+        f.classList.toggle('highlighted', i === idx);
+        f.classList.toggle('dimmed', i !== idx);
+      });
+    }
+
+    function unhighlightYearFrame() {
+      document.querySelectorAll('#yearFilmStrip .film-frame').forEach(f => f.classList.remove('highlighted', 'dimmed'));
     }
 
     // ========== INIT ==========
