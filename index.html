@@ -1022,13 +1022,13 @@
       .thumb-strip { width: 56px; }
     }
 
-
+    @media (max-width: 900px) {
       /* Year page mobile */
-      #yearPage { position: relative !important; inset: auto !important; height: auto !important; flex-direction: column !important; transform: none !important; opacity: 1 !important; display: none; }
-      #yearPage.visible { display: flex; }
+      #yearPage { flex-direction: column !important; }
       .year-left { width: 100% !important; height: auto !important; min-height: 60vh; padding: 28px 24px; }
       .year-right { width: 100% !important; height: auto !important; overflow: visible !important; }
       .year-title h1 { font-size: 52px; letter-spacing: -2px; }
+    }
 
     @media (max-width: 600px) {
       /* Cover mobile */
@@ -1233,7 +1233,7 @@
 
     /* ========== YEAR PAGE ========== */
     #yearPage {
-      position: fixed; inset: 0; z-index: 9;
+      position: fixed; inset: 0; z-index: 15;
       display: flex;
       background: var(--dark);
       transform: translateX(100%);
