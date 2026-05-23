@@ -1374,6 +1374,224 @@
       display: flex; flex-direction: column;
     }
 
+
+    /* ========== RESUME SECTION ========== */
+    .resume-brief {
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .resume-name {
+      font-family: var(--sans);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .resume-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .resume-summary {
+      font-family: var(--sans);
+      font-size: 12px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 16px;
+    }
+    .resume-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .resume-skill-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.5);
+      transition: all 0.2s;
+    }
+    .resume-skill-tag:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+    .resume-contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
+    }
+    .resume-contact span { transition: color 0.2s; cursor: default; }
+    .resume-contact span:hover { color: rgba(255,255,255,0.6); }
+    .resume-btn {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      padding: 8px 20px;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+      background: transparent;
+      margin-top: 12px;
+    }
+    .resume-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    /* Full resume page */
+    #resumePage {
+      position: fixed; inset: 0; z-index: 15;
+      background: #0a0a0b;
+      transform: translateX(100%);
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+    #resumePage.visible { transform: translateX(0); }
+    .resume-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      color: var(--white);
+    }
+    .resume-page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+    .resume-page-back {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .resume-page-back:hover { color: var(--white); }
+    .resume-page-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.2);
+    }
+    .resume-section { margin-bottom: 40px; }
+    .resume-section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--orange);
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .resume-item { margin-bottom: 24px; }
+    .resume-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .resume-item-title {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .resume-item-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
+    }
+    .resume-item-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+    }
+    .resume-item-desc {
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.5);
+    }
+    .resume-item-desc .bullet {
+      display: block;
+      padding-left: 12px;
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .resume-item-desc .bullet::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+    }
+    .resume-skill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .resume-skill-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .resume-skill-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+      width: 80px;
+      flex-shrink: 0;
+    }
+    .resume-skill-bar {
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .resume-skill-fill {
+      height: 100%;
+      background: var(--orange);
+      border-radius: 2px;
+      transition: width 0.6s ease-out;
+    }
+    .resume-skill-tools {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 2px;
+    }
+    .resume-award-item {
+      margin-bottom: 8px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+    .resume-award-item .year {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      margin-right: 8px;
+    }
+
   </style>
 </head>
 <body>
@@ -1440,6 +1658,27 @@
         <span class="roll-label">ROLL 01 • COVER</span>
       </div>
 
+
+      <div class="resume-brief">
+        <div class="resume-name">陈永泰</div>
+        <div class="resume-title">AIGC 创意设计 / 数字媒体艺术</div>
+        <div class="resume-summary">数字媒体艺术专业本科生，兼具AIGC创意生产与三维视觉设计能力。曾独立带领团队完成AI漫剧从0到1全流程制作。</div>
+        <div class="resume-skills">
+          <span class="resume-skill-tag">Midjourney</span>
+          <span class="resume-skill-tag">Stable Diffusion</span>
+          <span class="resume-skill-tag">ComfyUI</span>
+          <span class="resume-skill-tag">Maya</span>
+          <span class="resume-skill-tag">ZBrush</span>
+          <span class="resume-skill-tag">AE</span>
+          <span class="resume-skill-tag">TouchDesigner</span>
+        </div>
+        <div class="resume-contact">
+          <span>1847284409@qq.com</span>
+          <span>江苏省苏州市</span>
+        </div>
+        <button class="resume-btn" onclick="openResume()">查看完整简历 →</button>
+      </div>
+
       <div class="cover-title">
         <h1>WORKS <span class="year">CHENGZI</span></h1>
         <div class="divider"></div>
@@ -1464,6 +1703,136 @@
     </div>
   </div>
 
+
+
+  <!-- ==================== RESUME PAGE ==================== -->
+  <div id="resumePage">
+    <div class="resume-container">
+      <div class="resume-page-header">
+        <span class="resume-page-back" onclick="closeResume()">← 返回</span>
+        <span class="resume-page-title">RESUME • 陈永泰</span>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">个人信息</div>
+        <div class="resume-item">
+          <div class="resume-item-title">陈永泰</div>
+          <div class="resume-item-sub">AIGC创意设计 / 数字媒体艺术</div>
+          <div class="resume-item-desc">
+            <span class="bullet">数字媒体艺术专业本科生，GPA 3.55/4.0，兼具AIGC创意生产与三维视觉设计能力</span>
+            <span class="bullet">曾独立带领团队完成AI漫剧从0到1全流程制作</span>
+            <span class="bullet">精通Midjourney、Stable Diffusion、ComfyUI等AIGC工具链</span>
+            <span class="bullet">精通Maya、ZBrush等3D软件</span>
+            <span class="bullet">获全国数字艺术设计大赛国赛二等奖</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">专业技能</div>
+        <div class="resume-skill-grid">
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">AIGC工具</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="resume-skill-tools">Midjourney / SD / ComfyUI</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">AI视频</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="resume-skill-tools">Runway / Kling / Sora</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">3D建模</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="resume-skill-tools">Maya / 3ds Max / ZBrush</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">材质贴图</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:60%"></div></div>
+          </div>
+          <div class="resume-skill-tools">Substance 3D Painter</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">后期合成</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:80%"></div></div>
+          </div>
+          <div class="resume-skill-tools">AE / Premiere / PS</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">交互设计</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:60%"></div></div>
+          </div>
+          <div class="resume-skill-tools">TouchDesigner</div>
+          <div class="resume-skill-row">
+            <span class="resume-skill-label">渲染呈现</span>
+            <div class="resume-skill-bar"><div class="resume-skill-fill" style="width:60%"></div></div>
+          </div>
+          <div class="resume-skill-tools">Marmoset Toolbag 4</div>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">工作经历</div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <span class="resume-item-title">南京分布文化有限公司</span>
+            <span class="resume-item-date">2025.12 - 2026.04</span>
+          </div>
+          <div class="resume-item-sub">AIGC创意设计</div>
+          <div class="resume-item-desc">
+            <span class="bullet">主导AIGC影像生成的技术攻坚与疑难排解，对接Midjourney、Stable Diffusion、ComfyUI等工具链，保障生成质量与风格一致性</span>
+            <span class="bullet">独立统筹AI漫剧从创意构思到成片输出的全流程制作，包括角色设计、场景构建、AI生图、视频合成等环节</span>
+            <span class="bullet">带领团队协作，制定制作标准与工作流程，提升团队产出效率</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">项目经历</div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <span class="resume-item-title">海绘 — 海洋生态交互装置</span>
+            <span class="resume-item-date">2024.09 - 2024.10</span>
+          </div>
+          <div class="resume-item-sub">创意发起 / 技术实现</div>
+          <div class="resume-item-desc">
+            <span class="bullet">主导提出核心创意概念——海洋生物"破碎-重组"动态视觉叙事，设计整体交互流程框架</span>
+            <span class="bullet">基于TouchDesigner实现交互式破碎重组动态视觉合成，将艺术概念转化为具有冲击力的沉浸式体验</span>
+            <span class="bullet">以交互手势为主导模式，推动方案迭代优化，提升用户体验</span>
+            <span class="bullet">项目获中国好创意第十九届全国数字艺术设计大赛 本科组 海洋文化类 国赛二等奖</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">教育背景</div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <span class="resume-item-title">南京艺术学院</span>
+            <span class="resume-item-date">2022.09 - 2026.06</span>
+          </div>
+          <div class="resume-item-sub">数字媒体艺术（本科） · GPA 3.52/4.0</div>
+          <div class="resume-item-desc">
+            <span class="bullet">主修：虚拟现实设计、用户体验设计、交互设计、三维动画设计、数字编程设计、多媒体装置、视频剪辑</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">荣誉奖项</div>
+        <div class="resume-award-item"><span class="year">2024</span>中国好创意第十九届全国数字艺术设计大赛 本科组 海洋文化类 国赛二等奖</div>
+        <div class="resume-award-item"><span class="year">2025</span>"国青杯"学生组二等奖</div>
+        <div class="resume-award-item"><span class="year">2023</span>"国青杯"学生组二等奖</div>
+        <div class="resume-award-item"><span class="year">2023</span>南京艺术学院优秀学生奖学金 三等奖</div>
+        <div class="resume-award-item"><span class="year">2024</span>南京艺术学院优秀学生奖学金 单项奖</div>
+        <div class="resume-award-item"><span class="year">2025</span>南京艺术学院优秀学生奖学金 三等奖</div>
+      </div>
+
+      <div class="resume-section">
+        <div class="resume-section-title">资质证书</div>
+        <div class="resume-award-item">动画制作员 三级/高级工</div>
+        <div class="resume-award-item">普通话 二级甲等</div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== YEAR PAGE ==================== -->
   <div id="yearPage">
@@ -2443,6 +2812,16 @@
       } catch(e) {}
     }
 
+
+
+    // ========== RESUME PAGE ==========
+    function openResume() {
+      document.getElementById('resumePage').classList.add('visible');
+      if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function closeResume() {
+      document.getElementById('resumePage').classList.remove('visible');
+    }
 
     // ========== YEAR PAGE ==========
     function openYearPage(year) {
