@@ -36,7 +36,9 @@
     /* Mobile: allow scroll for stacked layout */
     @media (max-width: 900px) {
       body { overflow-y: auto; height: auto; }
-      #cover { min-height: auto; position: relative; inset: auto; }
+      #cover { min-height: auto; position: relative; inset: auto; height: auto; }
+      .cover-left { height: auto; }
+      .cover-right { height: auto; }
       #chapter { min-height: 100vh; position: relative; transform: none; }
       #chapter.visible { transform: none; }
       .chapter-right-top { min-height: 300px; }
@@ -2252,7 +2254,7 @@
     let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
 
     document.addEventListener('touchstart', function(e) {
-      if (currentChapter < 0) return; // not on chapter page
+      if (currentChapter < 0) return;
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       touchStartTime = Date.now();
@@ -2263,38 +2265,29 @@
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       const dt = Date.now() - touchStartTime;
-      if (dt > 500) return; // too slow, not a swipe
+      if (dt > 500) return;
 
       const absDx = Math.abs(dx), absDy = Math.abs(dy);
-      if (absDx < 30 && absDy < 30) return; // too short
+      if (absDx < 40 && absDy < 40) return;
 
-      // Determine swipe target area
       const target = e.target;
       const isOnPhotoArea = target.closest('.chapter-right') || target.closest('.thumb-strip');
-      const isOnInfoArea = target.closest('.chapter-left');
 
-      if (isOnPhotoArea && absDx > absDy) {
-        // Horizontal swipe on photo/thumb area → switch photo
-        if (dx < 0) {
-          // Swipe left → next photo
-          const p = projects[currentChapter];
-          if (currentPhotoIndex < p.photos.length - 1) {
+      if (isOnPhotoArea) {
+        if (absDx > absDy) {
+          // Horizontal swipe → switch photo
+          if (dx < 0 && currentPhotoIndex < projects[currentChapter].photos.length - 1) {
             previewPhoto(currentChapter, currentPhotoIndex + 1);
-          }
-        } else {
-          // Swipe right → previous photo
-          if (currentPhotoIndex > 0) {
+          } else if (dx > 0 && currentPhotoIndex > 0) {
             previewPhoto(currentChapter, currentPhotoIndex - 1);
           }
-        }
-      } else if (isOnInfoArea && absDy > absDx) {
-        // Vertical swipe on info area → switch chapter
-        if (dy < 0) {
-          // Swipe up → next chapter
-          nextChapter();
         } else {
-          // Swipe down → previous chapter
-          prevChapter();
+          // Vertical swipe on photo area → switch chapter
+          if (dy < 0 && currentChapter < projects.length - 1) {
+            nextChapter();
+          } else if (dy > 0 && currentChapter > 0) {
+            prevChapter();
+          }
         }
       }
     }, { passive: true });
