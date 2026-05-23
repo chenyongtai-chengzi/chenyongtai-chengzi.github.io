@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PORTFOLIO — 个人作品集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #0a0a0a;
+      --dark: #111;
+      --white: #f5f0e6;
+      --cream: #e8e0d4;
+      --orange: #e8652b;
+      --orange-soft: rgba(232,101,43,0.15);
+      --muted: #666;
+      --border: #222;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Inter', 'Noto Sans SC', sans-serif;
+      --serif: 'Playfair Display', Georgia, serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--black);
+      color: var(--white);
+      overflow: hidden;
+      height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Mobile: allow scroll for stacked layout */
+    @media (max-width: 900px) {
+      body { overflow-y: auto; height: auto; }
+      #cover { min-height: 100vh; }
+      #chapter { min-height: 100vh; position: relative; transform: none; }
+      #chapter.visible { transform: none; }
+      .chapter-right-top { min-height: 300px; }
+    }
+
+    /* ========== GRAIN OVERLAY ========== */
+    .grain {
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      animation: grainShift 0.5s steps(4) infinite;
+    }
+    @keyframes grainShift {
+      0%, 100% { transform: translate(0,0); }
+      25% { transform: translate(-2px,1px); }
+      50% { transform: translate(1px,-1px); }
+      75% { transform: translate(-1px,2px); }
+    }
+
+    /* ========== LIGHT LEAK ========== */
+    .light-leak {
+      position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+      background: radial-gradient(ellipse at 80% 20%, rgba(106,154,208,0.06) 0%, transparent 50%),
+                  radial-gradient(ellipse at 20% 80%, rgba(180,120,60,0.04) 0%, transparent 40%);
+    }
+
+    /* ========== SCAN LINES ========== */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+    }
+
+    /* ========== COVER PAGE ========== */
+    #cover {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s;
+    }
+    #cover.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    /* Left Panel */
+    .cover-left {
+      width: 55%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 56px;
+      position: relative;
+      background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 25%, #121830 50%, #1a2a50 75%, #2a4a7a 100%);
+    }
+    .cover-left::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent 10%, rgba(106,154,208,0.2) 50%, transparent 90%);
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 56px;
+    }
+    .top-bar .title-label { color: #e0e8f5; font-weight: 700; }
+    .top-bar .roll-label { color: #6a9ad0; }
+
+    /* Main title */
+    .cover-title { margin-bottom: 8px; }
+    .cover-title h1 {
+      font-size: 120px;
+      font-weight: 900;
+      letter-spacing: -5px;
+      line-height: 0.85;
+      color: #ffffff;
+    }
+    .cover-title h1 .year {
+      display: block;
+      -webkit-text-stroke: 3px #6a9ad0;
+      color: transparent;
+      font-size: 140px;
+      letter-spacing: -6px;
+    }
+    .cover-title .divider {
+      width: 80px;
+      height: 2px;
+      background: var(--orange);
+      margin: 20px 0;
+    }
+    .cover-title .subtitle {
+      font-size: 15px;
+      color: #c0d0e8;
+      letter-spacing: 4px;
+      font-weight: 300;
+    }
+    .cover-title .subtitle-en {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: #6a9ad0;
+      margin-top: 6px;
+      opacity: 0.9;
+    }
+
+    /* Index list */
+    .cover-index {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 40px;
+    }
+    .index-row {
+      display: grid;
+      grid-template-columns: 36px 56px 1fr 80px;
+      align-items: center;
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      color: #e0ddd8;
+      cursor: pointer;
+      transition: all 0.25s;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+    }
+    .index-row::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: #6a9ad0;
+      transition: width 0.3s;
+    }
+    .index-row:hover::before,
+    .index-row.linked::before {
+      width: 3px;
+    }
+    .index-row:hover,
+    .index-row.linked {
+      background: rgba(106,154,208,0.1);
+    }
+    .index-row.dimmed {
+      opacity: 0.25;
+    }
+    .index-row .num { color: #6a9ad0; font-weight: 700; }
+    .index-row .date { color: #6a7a98; }
+    .index-row .name { font-weight: 600; letter-spacing: 1px; color: #e0e8f5; }
+    .index-row .tag { color: #6a7a98; text-align: right; font-size: 10px; }
+
+    /* Enter button */
+    .enter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border: 1px solid #6a9ad0;
+      background: transparent;
+      color: #6a9ad0;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 24px;
+    }
+    .enter-btn:hover {
+      background: #6a9ad0;
+      color: #0a0a0b;
+    }
+    .enter-btn .arrow {
+      transition: transform 0.3s;
+    }
+    .enter-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .dev-info {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    /* ========== Right Panel - Film Strip ========== */
+    .cover-right {
+      width: 45%;
+      height: 100%;
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .film-strip-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 72px;
+      gap: 0;
+      min-height: 0;
+    }
+
+    /* Film strip header */
+    .film-header {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.2);
+      padding: 12px 72px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Film frame */
+    .film-frame {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      cursor: pointer;
+      transition: opacity 0.3s, box-shadow 0.3s;
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .film-frame:hover, .film-frame.highlighted {
+      box-shadow: 0 0 24px rgba(106,154,208,0.2), inset 0 0 20px rgba(106,154,208,0.05);
+      border-color: rgba(106,154,208,0.4);
+      z-index: 2;
+    }
+    .film-frame.dimmed { opacity: 0.2; }
+    .film-frame img {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      display: block;
+      object-fit: cover;
+      filter: sepia(0.15) contrast(1.05);
+      transition: filter 0.3s;
+    }
+    .film-frame:hover img,
+    .film-frame.highlighted img {
+      filter: sepia(0) contrast(1.1);
+    }
+
+    /* Sprocket holes */
+    .sprocket-row {
+      display: flex;
+      justify-content: space-evenly;
+      padding: 2px 10px;
+      background: #080808;
+      flex-shrink: 0;
+    }
+    .sprocket {
+      width: 8px;
+      height: 5px;
+      border-radius: 1.5px;
+      background: #151515;
+      border: 1px solid #222;
+    }
+
+    /* Film edge text */
+    .film-edge-text {
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-family: var(--mono);
+      font-size: 6px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.08);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Frame overlay info */
+    .frame-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .frame-num {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--orange);
+      text-shadow: 0 0 8px rgba(106,154,208,0.4);
+    }
+    .frame-location {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-family: var(--sans);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--white);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+    .frame-exp {
+      font-family: var(--mono);
+      font-size: 7px;
+      color: rgba(255,255,255,0.15);
+      padding: 2px 10px;
+      flex-shrink: 0;
+      background: #080808;
+    }
+
+    /* Hover status bar */
+    .hover-status {
+      position: absolute;
+      bottom: 12px;
+      right: 72px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--orange);
+      z-index: 3;
+      text-shadow: 0 0 10px rgba(106,154,208,0.3);
+    }
+
+    /* ========== CHAPTER PAGE ========== */
+    #chapter {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex;
+      transform: translateX(100%);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #chapter.visible { transform: translateX(0); }
+
+    /* Chapter left */
+    .chapter-left {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 56px;
+      position: relative;
+      overflow-y: auto;
+    }
+    .chapter-left::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent 10%, rgba(0,0,0,0.15) 50%, transparent 90%);
+    }
+
+    .chapter-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(0,0,0,0.35);
+      margin-bottom: 56px;
+    }
+    .chapter-top-bar .back-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .chapter-top-bar .back-btn:hover { color: rgba(0,0,0,0.7); }
+    .nav-btns { display: flex; gap: 20px; }
+    .nav-btn {
+      background: none;
+      border: 1px solid rgba(0,0,0,0.15);
+      color: rgba(0,0,0,0.5);
+      padding: 6px 16px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      border-color: rgba(0,0,0,0.4);
+      color: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.05);
+    }
+
+    /* Chapter number */
+    .chapter-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(0,0,0,0.3);
+      margin-bottom: 12px;
+    }
+
+    /* Chapter title */
+    .chapter-title {
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      color: rgba(0,0,0,0.85);
+      margin-bottom: 4px;
+    }
+    .chapter-title-cn {
+      font-size: 20px;
+      font-weight: 300;
+      color: rgba(0,0,0,0.5);
+      margin-bottom: 16px;
+    }
+    .chapter-divider {
+      width: 60px;
+      height: 2px;
+      background: rgba(0,0,0,0.3);
+      margin-bottom: 16px;
+    }
+    .chapter-desc {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: rgba(0,0,0,0.35);
+      text-transform: lowercase;
+      margin-bottom: 40px;
+    }
+
+    /* Timeline list */
+    .chapter-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+    .timeline-item {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(0,0,0,0.6);
+    }
+    .timeline-item .t-num {
+      color: rgba(0,0,0,0.8);
+      font-weight: 700;
+      min-width: 22px;
+    }
+    .timeline-item .t-time { color: rgba(0,0,0,0.3); }
+    .timeline-item .t-label { color: rgba(0,0,0,0.7); }
+
+    /* Quote */
+    .chapter-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(0,0,0,0.4);
+      margin-top: auto;
+      padding-top: 32px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    /* Bottom stamps */
+    .chapter-stamps {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 28px;
+    }
+    .stamp-circle {
+      width: 52px;
+      height: 52px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: rgba(0,0,0,0.3);
+      transform: rotate(-12deg);
+    }
+    .spot-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(0,0,0,0.2);
+    }
+
+    /* ========== Chapter Right ========== */
+    .chapter-right {
+      width: 50%;
+      height: 100%;
+      background: var(--dark);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .chapter-right-top {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      min-height: 0;
+    }
+
+    .photo-main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s, transform 0.5s;
+      filter: sepia(0.08) contrast(1.05);
+    }
+    .photo-main video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s, transform 0.5s;
+    }
+    .video-badge {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--white);
+      background: rgba(232,101,43,0.85);
+      padding: 4px 10px;
+      border-radius: 2px;
+      z-index: 2;
+    }
+    .photo-time {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--orange);
+      text-shadow: 0 0 12px rgba(232,101,43,0.4);
+    }
+    .photo-location {
+      position: absolute;
+      top: 42px;
+      right: 24px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+    }
+    .photo-caption {
+      position: absolute;
+      bottom: 60px;
+      left: 24px;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    }
+
+    /* Thumbnail strip - film style */
+    .thumb-strip {
+      width: 88px;
+      height: 100%;
+      background: #080808;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 10px 8px;
+      flex-shrink: 0;
+      border-left: 1px solid rgba(255,255,255,0.03);
+    }
+    .thumb-strip::-webkit-scrollbar { width: 0; }
+
+    .thumb-frame {
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.25s, box-shadow 0.25s, transform 0.25s;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.03);
+      position: relative;
+    }
+    .thumb-frame:hover,
+    .thumb-frame.active {
+      opacity: 1;
+      box-shadow: 0 0 14px rgba(232,101,43,0.25);
+      border-color: rgba(232,101,43,0.5);
+      transform: scale(1.06);
+      z-index: 2;
+    }
+
+    .thumb-sprocket {
+      display: flex;
+      justify-content: space-evenly;
+      padding: 2px 4px;
+      background: #050505;
+    }
+    .thumb-sprocket-hole {
+      width: 5px;
+      height: 4px;
+      border-radius: 1px;
+      background: #151515;
+      border: 1px solid #1f1f1f;
+    }
+    .thumb-frame img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      filter: sepia(0.1);
+      transition: filter 0.2s;
+    }
+    .thumb-frame:hover img,
+    .thumb-frame.active img {
+      filter: sepia(0);
+    }
+    .thumb-label {
+      font-family: var(--mono);
+      font-size: 7px;
+      color: rgba(255,255,255,0.15);
+      text-align: center;
+      padding: 2px 0;
+      background: #050505;
+    }
+
+    /* Contact sheet bar */
+    .contact-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: var(--black);
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .contact-bar .exposure-count { color: var(--white); font-weight: 600; }
+    .contact-bar .contact-place { color: rgba(255,255,255,0.5); }
+    .contact-bar .contact-sheet-label { color: rgba(255,255,255,0.2); letter-spacing: 2px; }
+
+    .photo-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .photo-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .photo-dot.active {
+      background: var(--orange);
+      box-shadow: 0 0 6px rgba(232,101,43,0.4);
+    }
+
+    /* ========== LIGHTBOX ========== */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      cursor: zoom-out;
+    }
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border: 1px solid rgba(255,255,255,0.06);
+      transform: scale(0.9);
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+      filter: sepia(0.05) contrast(1.05);
+    }
+    .lightbox.active img {
+      transform: scale(1);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px; right: 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: color 0.2s;
+      z-index: 101;
+    }
+    .lightbox-close:hover { color: var(--white); }
+    .lightbox-info {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+    }
+
+    /* ========== EDIT MODE ========== */
+    .edit-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 200;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+    }
+    .edit-toggle:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .edit-toggle.active { background: #6a9ad0; color: #fff; border-color: #6a9ad0; }
+
+    .upload-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s;
+    }
+    .upload-overlay:hover { background: rgba(0,0,0,0.75); }
+    .upload-overlay span {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #fff;
+      padding: 8px 16px;
+      border: 1px dashed rgba(255,255,255,0.4);
+      border-radius: 4px;
+    }
+    body.edit-mode .upload-overlay { display: flex; }
+    body.edit-mode .film-frame { cursor: pointer; }
+    body.edit-mode .thumb-frame { cursor: pointer; }
+    body.edit-mode .photo-main { cursor: pointer; }
+
+    .edit-panel {
+      position: fixed;
+      top: 0; right: -380px;
+      width: 380px;
+      height: 100vh;
+      background: #111;
+      border-left: 1px solid #222;
+      z-index: 150;
+      transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .edit-panel.open { right: 0; }
+    .edit-panel h3 {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #6a9ad0;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #222;
+    }
+    .edit-panel label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 4px;
+      margin-top: 14px;
+    }
+    .edit-panel input, .edit-panel textarea {
+      width: 100%;
+      padding: 8px 12px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #eee;
+      font-family: var(--sans);
+      font-size: 13px;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .edit-panel input:focus, .edit-panel textarea:focus { border-color: #6a9ad0; }
+    .edit-panel textarea { resize: vertical; min-height: 60px; }
+    .edit-panel .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .edit-panel .btn {
+      flex: 1;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      border: 1px solid #444;
+      background: transparent;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .edit-panel .btn:hover { background: #222; }
+    .edit-panel .btn.primary { background: #6a9ad0; color: #fff; border-color: #6a9ad0; }
+    .edit-panel .btn.primary:hover { background: #5a8ac0; }
+    .edit-panel .btn.danger { border-color: #c44536; color: #c44536; }
+    .edit-panel .btn.danger:hover { background: #c44536; color: #fff; }
+    .edit-panel .photo-edit-item {
+      padding: 12px;
+      background: #1a1a1a;
+      border: 1px solid #222;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .edit-panel .photo-edit-item .photo-thumb-preview {
+      width: 100%;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+    .edit-panel .photo-edit-item .upload-btn {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      border: 1px dashed #555;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+      border-radius: 3px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .edit-panel .photo-edit-item .upload-btn:hover { border-color: #6a9ad0; color: #6a9ad0; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1200px) {
+      .cover-left { width: 50%; padding: 36px 40px; }
+      .cover-right { width: 50%; }
+      .cover-title h1 { font-size: 90px; }
+      .cover-title h1 .year { font-size: 100px; }
+      .film-strip-inner { padding: 0 40px; }
+      .film-header { padding: 10px 40px; }
+      .chapter-left { padding: 32px 36px; }
+      .chapter-title { font-size: 48px; }
+    }
+
+    @media (max-width: 900px) {
+      /* Cover: stack vertically */
+      #cover { flex-direction: column; }
+      .cover-left { width: 100%; height: auto; min-height: 55vh; padding: 28px 24px; background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 30%, #121830 60%, #1a2a50 100%); }
+      .cover-right { width: 100%; height: 45vh; }
+      .cover-title h1 { font-size: 72px; letter-spacing: -3px; }
+      .cover-title h1 .year { font-size: 84px; letter-spacing: -4px; }
+      .cover-title .subtitle { font-size: 13px; }
+      .top-bar { margin-bottom: 32px; }
+      .cover-index { margin-top: 24px; }
+      .index-row { padding: 10px 12px; font-size: 10px; }
+      .film-strip-inner { padding: 0 24px; }
+      .film-header { padding: 8px 24px; }
+      .dev-info { display: none; }
+
+      /* Chapter: stack vertically */
+      #chapter { flex-direction: column; }
+      .chapter-left { width: 100%; height: auto; min-height: 40vh; padding: 24px 20px; overflow-y: visible; }
+      .chapter-right { width: 100%; height: 60vh; }
+      .chapter-top-bar { margin-bottom: 24px; }
+      .chapter-title { font-size: 40px; }
+      .chapter-title-cn { font-size: 15px; }
+      .chapter-quote { font-size: 12px; }
+      .stamp-circle { width: 40px; height: 40px; font-size: 8px; }
+
+      /* Thumb strip narrower on tablet */
+      .thumb-strip { width: 56px; }
+    }
+
+    @media (max-width: 600px) {
+      /* Cover mobile */
+      .cover-left { padding: 20px 16px; min-height: 50vh; }
+      .cover-right { height: 50vh; }
+      .cover-title h1 { font-size: 52px; letter-spacing: -2px; }
+      .cover-title h1 .year { font-size: 60px; letter-spacing: -3px; -webkit-text-stroke-width: 2px; }
+      .cover-title .divider { width: 50px; margin: 14px 0; }
+      .cover-title .subtitle { font-size: 11px; letter-spacing: 2px; }
+      .cover-title .subtitle-en { font-size: 11px; }
+      .top-bar { font-size: 9px; margin-bottom: 20px; }
+      .index-row { grid-template-columns: 28px 44px 1fr 56px; padding: 8px 8px; font-size: 9px; gap: 0; }
+      .index-row .tag { font-size: 8px; }
+      .enter-btn { padding: 10px 20px; font-size: 10px; margin-top: 16px; }
+      .film-strip-inner { padding: 0 16px; }
+      .film-header { padding: 6px 16px; font-size: 8px; }
+      .frame-num { font-size: 10px; top: 4px; right: 6px; }
+      .frame-location { font-size: 8px; bottom: 6px; right: 6px; letter-spacing: 1px; }
+      .frame-exp { font-size: 7px; padding: 1px 6px; }
+      .sprocket { width: 7px; height: 5px; }
+      .sprocket-row { padding: 2px 6px; }
+      .hover-status { font-size: 8px; bottom: 6px; right: 16px; }
+
+      /* Chapter mobile */
+      .chapter-left { padding: 16px 14px; min-height: 35vh; }
+      .chapter-right { height: 65vh; }
+      .chapter-top-bar { font-size: 9px; margin-bottom: 16px; }
+      .chapter-num { font-size: 9px; letter-spacing: 1px; margin-bottom: 8px; }
+      .chapter-title { font-size: 32px; letter-spacing: -1px; }
+      .chapter-title-cn { font-size: 13px; margin-bottom: 10px; }
+      .chapter-desc { font-size: 9px; margin-bottom: 20px; }
+      .chapter-timeline { gap: 8px; margin-bottom: 20px; }
+      .timeline-item { font-size: 10px; gap: 8px; }
+      .chapter-quote { font-size: 11px; padding-top: 20px; }
+      .stamp-circle { width: 36px; height: 36px; font-size: 7px; }
+      .spot-label { font-size: 8px; }
+
+      /* Thumb strip on mobile: hide, use dots instead */
+      .thumb-strip { display: none; }
+      .photo-dots { display: flex !important; }
+
+      /* Contact bar mobile */
+      .contact-bar { padding: 8px 12px; font-size: 8px; flex-wrap: wrap; gap: 4px; }
+      .contact-bar .exposure-count { font-size: 9px; }
+      .contact-bar .contact-sheet-label { font-size: 8px; }
+
+      /* Photo info mobile */
+      .photo-time { font-size: 10px; top: 10px; right: 12px; }
+      .photo-location { font-size: 9px; top: 26px; right: 12px; }
+      .photo-caption { font-size: 9px; bottom: 8px; left: 12px; }
+      .video-badge { font-size: 8px; padding: 3px 8px; top: 10px; left: 12px; }
+
+      /* Lightbox mobile */
+      .lightbox img { max-width: 96vw; max-height: 80vh; }
+      .lightbox-close { top: 12px; right: 16px; font-size: 9px; }
+      .lightbox-info { font-size: 8px; bottom: 16px; }
+
+      /* Edit panel mobile */
+      .edit-panel { width: 100%; right: -100%; }
+      .edit-toggle { bottom: 12px; left: 12px; font-size: 9px; padding: 6px 12px; }
+
+      /* Nav buttons mobile */
+      .nav-btn { padding: 6px 12px; font-size: 9px; }
+      .back-btn { font-size: 10px; }
+
+      /* Grain/light effects lighter on mobile */
+      .grain { opacity: 0.02; }
+      .scanlines { display: none; }
+      .light-leak { opacity: 0.5; }
+    }
+
+    /* Touch device: show dots always */
+    @media (hover: none) {
+      .photo-dots { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="light-leak"></div>
+  <div class="scanlines"></div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-close">按 ESC 关闭</div>
+    <img id="lightboxImg" src="" alt="" />
+    <div class="lightbox-info" id="lightboxInfo"></div>
+  </div>
+
+  <!-- Edit Toggle -->
+  <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✎ 编辑</button>
+
+  <!-- Edit Panel -->
+  <div class="edit-panel" id="editPanel">
+    <h3>编辑项目</h3>
+    <div id="editPanelContent"></div>
+  </div>
+
+  <!-- Hidden file input -->
+  <input type="file" id="fileInput" accept="image/*,video/*" style="display:none" />
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div id="cover">
+    <div class="cover-left">
+      <div class="top-bar">
+        <span class="title-label">PORTFOLIO 2026 • WORKS</span>
+        <span class="roll-label">ROLL 01 • COVER</span>
+      </div>
+
+      <div class="cover-title">
+        <h1>WORKS <span class="year">2026</span></h1>
+        <div class="divider"></div>
+        <div class="subtitle">作品集 • 二〇二六</div>
+        <div class="subtitle-en">a roll exposed across creative fields —</div>
+      </div>
+
+      <div class="cover-index" id="coverIndex"></div>
+
+      <button class="enter-btn" onclick="enterRoll()">
+        进入影集 <span class="arrow">→</span>
+      </button>
+
+      <div class="dev-info">DEV 2026 • STUDIO</div>
+    </div>
+
+    <div class="cover-right" id="filmStrip">
+      <div class="film-header">
+        PORTFOLIO-25-R1 • KODAK PORTRA 400 • <span id="frameCount">07</span> OF 36
+      </div>
+      <div class="hover-status" id="hoverStatus"></div>
+    </div>
+  </div>
+
+  <!-- ==================== CHAPTER PAGE ==================== -->
+  <div id="chapter">
+    <div class="chapter-left" id="chapterLeft">
+      <div class="chapter-top-bar">
+        <span class="back-btn" onclick="goBack()">← 返回</span>
+        <div class="nav-btns">
+          <button class="nav-btn" onclick="prevChapter()">上一页</button>
+          <button class="nav-btn" onclick="nextChapter()">下一页</button>
+        </div>
+      </div>
+
+      <div class="chapter-num" id="chapterNum"></div>
+      <div class="chapter-title" id="chapterTitle"></div>
+      <div class="chapter-title-cn" id="chapterTitleCn"></div>
+      <div class="chapter-divider"></div>
+      <div class="chapter-desc" id="chapterDesc"></div>
+
+      <div class="chapter-timeline" id="chapterTimeline"></div>
+
+      <div class="chapter-quote" id="chapterQuote"></div>
+
+      <div class="chapter-stamps">
+        <div class="stamp-circle" id="stampYear">2026</div>
+        <div class="spot-label">SPOT • PORTFOLIO 2026</div>
+      </div>
+    </div>
+
+    <div class="chapter-right">
+      <div class="chapter-right-top">
+        <div class="photo-main" id="photoMain">
+          <img id="photoImg" src="" alt="" />
+          <video id="photoVideo" src="" loop muted playsinline style="display:none;"></video>
+          <div class="photo-time" id="photoTime"></div>
+          <div class="photo-location" id="photoLocation"></div>
+          <div class="photo-caption" id="photoCaption"></div>
+          <div class="video-badge" id="videoBadge" style="display:none;">▶ 视频</div>
+        </div>
+        <div class="thumb-strip" id="thumbStrip"></div>
+      </div>
+      <div class="contact-bar">
+        <span class="exposure-count" id="exposureCount">01 / 03 EXPOSURES</span>
+        <div class="photo-dots" id="photoDots"></div>
+        <span class="contact-place" id="contactPlace"></span>
+        <span class="contact-sheet-label" id="contactSheetLabel">CONTACT SHEET 01</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== DATA ==========
+    const projects = [
+      {
+        id: 'aigc',
+        name: 'AIGC',
+        nameCn: '人工智能生成',
+        date: '01.12',
+        tag: 'AI',
+        color: '#c44536',
+        desc: 'text-to-image • ai video • generative art',
+        timeline: [
+          { num: '01', time: '09:00', label: 'AI图像生成' },
+          { num: '02', time: '14:30', label: 'AI视频创作' },
+          { num: '03', time: '19:00', label: '生成式艺术实验' }
+        ],
+        quote: '"The AI does not replace the artist — it amplifies the imagination beyond the limits of the hand."',
+        coverUrl: 'https://picsum.photos/seed/aigc1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/aigc1/1200/800', time: '09:00', caption: 'text-to-image', location: 'AIGC · 图像' },
+          { url: 'https://picsum.photos/seed/aigc2/1200/800', time: '14:30', caption: 'ai video generation', location: 'AIGC · 视频', type: 'video', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+          { url: 'https://picsum.photos/seed/aigc3/1200/800', time: '19:00', caption: 'generative art', location: 'AIGC · 生成' }
+        ]
+      },
+      {
+        id: '3d-modeling',
+        name: '3D MODELING',
+        nameCn: '三维建模',
+        date: '02.28',
+        tag: '3D',
+        color: '#4a3728',
+        desc: 'modeling • sculpting • rendering',
+        timeline: [
+          { num: '01', time: '08:00', label: '角色建模雕刻' },
+          { num: '02', time: '13:00', label: '材质贴图制作' },
+          { num: '03', time: '18:00', label: '灯光渲染输出' }
+        ],
+        quote: '"In 3D, you are not drawing — you are building worlds from nothing."',
+        coverUrl: 'https://picsum.photos/seed/3dmodel1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/3dmodel1/1200/800', time: '08:00', caption: 'character sculpt', location: '3D · 雕刻' },
+          { url: 'https://picsum.photos/seed/3dmodel2/1200/800', time: '13:00', caption: 'texture & material', location: '3D · 材质' },
+          { url: 'https://picsum.photos/seed/3dmodel3/1200/800', time: '18:00', caption: 'lighting render', location: '3D · 渲染' }
+        ]
+      },
+      {
+        id: 'photography',
+        name: 'PHOTOGRAPHY',
+        nameCn: '摄影作品',
+        date: '04.08',
+        tag: 'PHOTO',
+        color: '#1a3a5c',
+        desc: 'portrait • landscape • street',
+        timeline: [
+          { num: '01', time: '06:30', label: '日出风景拍摄' },
+          { num: '02', time: '11:00', label: '人像写真创作' },
+          { num: '03', time: '16:00', label: '街头纪实摄影' }
+        ],
+        quote: '"The camera is an instrument that teaches people how to see without a camera."',
+        coverUrl: 'https://picsum.photos/seed/photo1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/photo1/1200/800', time: '06:30', caption: 'golden hour', location: 'PHOTO · 风景' },
+          { url: 'https://picsum.photos/seed/photo2/1200/800', time: '11:00', caption: 'portrait session', location: 'PHOTO · 人像' },
+          { url: 'https://picsum.photos/seed/photo3/1200/800', time: '16:00', caption: 'street life', location: 'PHOTO · 街头' }
+        ]
+      },
+      {
+        id: 'motion-design',
+        name: 'MOTION DESIGN',
+        nameCn: '动态设计',
+        date: '05.20',
+        tag: 'ANIMATION',
+        color: '#6a3073',
+        desc: 'animation • kinetic type • vfx',
+        timeline: [
+          { num: '01', time: '09:00', label: '动态图形设计' },
+          { num: '02', time: '14:00', label: '视觉特效合成' },
+          { num: '03', time: '19:00', label: '动态字体实验' }
+        ],
+        quote: '"Animation is not the art of drawings that move but the art of movements that are drawn."',
+        coverUrl: 'https://picsum.photos/seed/motion1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/motion1/1200/800', time: '09:00', caption: 'motion graphics', location: 'MOTION · 图形' },
+          { url: 'https://picsum.photos/seed/motion2/1200/800', time: '14:00', caption: 'visual effects', location: 'MOTION · 特效', type: 'video', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+          { url: 'https://picsum.photos/seed/motion3/1200/800', time: '19:00', caption: 'kinetic type', location: 'MOTION · 字体' }
+        ]
+      },
+      {
+        id: 'brand-design',
+        name: 'BRAND DESIGN',
+        nameCn: '品牌设计',
+        date: '07.15',
+        tag: 'DESIGN',
+        color: '#b8860b',
+        desc: 'identity • packaging • visual system',
+        timeline: [
+          { num: '01', time: '10:00', label: '品牌标识设计' },
+          { num: '02', time: '15:00', label: '包装视觉系统' },
+          { num: '03', time: '20:00', label: '品牌应用延展' }
+        ],
+        quote: '"Good design is as little design as possible — less, but better, because it concentrates on the essential."',
+        coverUrl: 'https://picsum.photos/seed/brand1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/brand1/1200/800', time: '10:00', caption: 'logo exploration', location: 'BRAND · 标识' },
+          { url: 'https://picsum.photos/seed/brand2/1200/800', time: '15:00', caption: 'packaging system', location: 'BRAND · 包装' },
+          { url: 'https://picsum.photos/seed/brand3/1200/800', time: '20:00', caption: 'visual extension', location: 'BRAND · 延展' }
+        ]
+      },
+      {
+        id: 'ui-ux',
+        name: 'UI / UX',
+        nameCn: '界面设计',
+        date: '09.22',
+        tag: 'DIGITAL',
+        color: '#2d6a4f',
+        desc: 'interface • interaction • experience',
+        timeline: [
+          { num: '01', time: '09:00', label: '用户研究分析' },
+          { num: '02', time: '14:00', label: '交互原型设计' },
+          { num: '03', time: '18:00', label: '视觉界面落地' }
+        ],
+        quote: '"Design is not just what it looks like and feels like. Design is how it works."',
+        coverUrl: 'https://picsum.photos/seed/uiux1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/uiux1/1200/800', time: '09:00', caption: 'user research', location: 'UX · 研究' },
+          { url: 'https://picsum.photos/seed/uiux2/1200/800', time: '14:00', caption: 'interaction prototype', location: 'UX · 原型' },
+          { url: 'https://picsum.photos/seed/uiux3/1200/800', time: '18:00', caption: 'visual interface', location: 'UX · 界面' }
+        ]
+      },
+      {
+        id: 'web-dev',
+        name: 'WEB DEV',
+        nameCn: '网页开发',
+        date: '11.05',
+        tag: 'CODE',
+        color: '#1a5c5c',
+        desc: 'frontend • creative coding • interactive',
+        timeline: [
+          { num: '01', time: '09:00', label: '前端架构搭建' },
+          { num: '02', time: '14:00', label: '创意编程实验' },
+          { num: '03', time: '19:00', label: '交互体验开发' }
+        ],
+        quote: '"The web is the most powerful medium for creativity ever invented by humans."',
+        coverUrl: 'https://picsum.photos/seed/webdev1/800/500',
+        photos: [
+          { url: 'https://picsum.photos/seed/webdev1/1200/800', time: '09:00', caption: 'frontend build', location: 'WEB · 前端' },
+          { url: 'https://picsum.photos/seed/webdev2/1200/800', time: '14:00', caption: 'creative code', location: 'WEB · 创意' },
+          { url: 'https://picsum.photos/seed/webdev3/1200/800', time: '19:00', caption: 'interactive experience', location: 'WEB · 交互' }
+        ]
+      }
+    ];
+
+    let currentChapter = -1;
+    let currentPhotoIndex = 0;
+
+    // ========== LINKAGE ==========
+    function highlightFrame(idx) {
+      document.querySelectorAll('.film-frame').forEach((f, i) => {
+        if (i === idx) f.classList.add('highlighted');
+        else f.classList.add('dimmed');
+      });
+    }
+    function unhighlightFrame() {
+      document.querySelectorAll('.film-frame').forEach(f => f.classList.remove('highlighted', 'dimmed'));
+    }
+    function highlightRow(idx) {
+      document.querySelectorAll('.index-row').forEach((r, i) => {
+        if (i === idx) r.classList.add('linked');
+        else r.classList.add('dimmed');
+      });
+    }
+    function unhighlightRow() {
+      document.querySelectorAll('.index-row').forEach(r => r.classList.remove('linked', 'dimmed'));
+    }
+
+    // ========== BUILD COVER ==========
+    function buildCover() {
+      const indexEl = document.getElementById('coverIndex');
+      const stripEl = document.getElementById('filmStrip');
+
+      indexEl.innerHTML = projects.map((p, i) => `
+        <div class="index-row" onclick="openChapter(${i})" data-idx="${i}"
+             onmouseenter="highlightFrame(${i})" onmouseleave="unhighlightFrame()">
+          <span class="num">${String(i + 1).padStart(2, '0')}</span>
+          <span class="date">${p.date}</span>
+          <span class="name">${p.name}</span>
+          <span class="tag">${p.tag}</span>
+        </div>
+      `).join('');
+
+      let inner = stripEl.querySelector('.film-strip-inner');
+      if (!inner) {
+        inner = document.createElement('div');
+        inner.className = 'film-strip-inner';
+        stripEl.insertBefore(inner, document.getElementById('hoverStatus'));
+      }
+      inner.innerHTML = '';
+
+      projects.forEach((p, i) => {
+        const frame = document.createElement('div');
+        frame.className = 'film-frame';
+        frame.dataset.idx = i;
+        frame.innerHTML = `
+          <div class="sprocket-row">
+            ${Array(14).fill('<div class="sprocket"></div>').join('')}
+          </div>
+          <div class="film-edge-text">KODAK PORTRA 400</div>
+          <div class="frame-overlay">
+            <span class="frame-num">${String(i + 1).padStart(2, '0')}</span>
+            <span class="frame-location">${p.name}</span>
+          </div>
+          <img src="${p.coverUrl}" alt="${p.name}" loading="lazy" />
+          <div class="sprocket-row">
+            ${Array(14).fill('<div class="sprocket"></div>').join('')}
+          </div>
+          <div class="frame-exp">EXP ${p.date} • ${p.tag}</div>
+        `;
+        frame.addEventListener('click', () => openChapter(i));
+        frame.addEventListener('mouseenter', () => {
+          document.getElementById('hoverStatus').textContent = `NOW HOVERING • ${p.name}`;
+          highlightRow(i);
+        });
+        frame.addEventListener('mouseleave', () => {
+          document.getElementById('hoverStatus').textContent = '';
+          unhighlightRow();
+        });
+        inner.appendChild(frame);
+      });
+
+      document.getElementById('frameCount').textContent = String(projects.length).padStart(2, '0');
+    }
+
+    // ========== NAVIGATION ==========
+    function enterRoll() { openChapter(0); }
+
+    function openChapter(idx) {
+      currentChapter = idx;
+      currentPhotoIndex = 0;
+      const p = projects[idx];
+
+      const left = document.getElementById('chapterLeft');
+      left.style.background = p.color;
+
+      document.getElementById('chapterNum').textContent = `CHAPTER ${String(idx + 1).padStart(2, '0')} • ${p.tag}`;
+      document.getElementById('chapterTitle').textContent = p.name;
+      document.getElementById('chapterTitleCn').textContent = p.nameCn;
+      document.getElementById('chapterDesc').textContent = p.desc;
+
+      document.getElementById('chapterTimeline').innerHTML = p.timeline.map(t => `
+        <div class="timeline-item">
+          <span class="t-num">${t.num}</span>
+          <span class="t-time">${t.time}</span>
+          <span class="t-label">· ${t.label}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('chapterQuote').textContent = p.quote;
+      document.getElementById('stampYear').textContent = '2026';
+
+      // Build thumbnail strip - film style
+      const thumbStrip = document.getElementById('thumbStrip');
+      thumbStrip.innerHTML = p.photos.map((ph, i) => `
+        <div class="thumb-frame ${i === 0 ? 'active' : ''}"
+             onmouseenter="previewPhoto(${idx}, ${i})"
+             onmouseleave="restorePhoto(${idx})"
+             onclick="openLightbox(${idx}, ${i})">
+          <div class="thumb-sprocket">
+            ${Array(6).fill('<div class="thumb-sprocket-hole"></div>').join('')}
+          </div>
+          <img src="${ph.url}" alt="${ph.caption}" />
+          <div class="thumb-sprocket">
+            ${Array(6).fill('<div class="thumb-sprocket-hole"></div>').join('')}
+          </div>
+          <div class="thumb-label">${String(i + 1).padStart(2, '0')}${ph.type === 'video' ? ' ▶' : ''}</div>
+        </div>
+      `).join('');
+
+      updatePhoto(idx, 0);
+
+      document.getElementById('cover').classList.add('hidden');
+      document.getElementById('chapter').classList.add('visible');
+      // Mobile: scroll to chapter section
+      if (window.innerWidth <= 900) {
+        setTimeout(() => {
+          document.getElementById('chapter').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+
+    function goBack() {
+      currentChapter = -1;
+      document.getElementById('cover').classList.remove('hidden');
+      document.getElementById('chapter').classList.remove('visible');
+      // Mobile: scroll to top
+      if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextChapter() {
+      if (currentChapter < projects.length - 1) openChapter(currentChapter + 1);
+    }
+    function prevChapter() {
+      if (currentChapter > 0) openChapter(currentChapter - 1);
+    }
+
+    // ========== LIGHTBOX ==========
+    function openLightbox(chapterIdx, photoIdx) {
+      const p = projects[chapterIdx];
+      const photo = p.photos[photoIdx];
+      const lb = document.getElementById('lightbox');
+      const isVideo = photo.type === 'video' && photo.videoUrl;
+
+      if (isVideo) {
+        document.getElementById('lightboxImg').style.display = 'none';
+        let lbVideo = document.getElementById('lightboxVideo');
+        if (!lbVideo) {
+          lbVideo = document.createElement('video');
+          lbVideo.id = 'lightboxVideo';
+          lbVideo.style.cssText = 'max-width:90vw;max-height:88vh;object-fit:contain;border:1px solid rgba(255,255,255,0.06);transform:scale(0.9);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);';
+          lbVideo.setAttribute('controls', '');
+          lbVideo.setAttribute('autoplay', '');
+          lb.insertBefore(lbVideo, document.getElementById('lightboxInfo'));
+        }
+        lbVideo.style.display = 'block';
+        lbVideo.src = photo.videoUrl;
+        setTimeout(() => { lbVideo.style.transform = 'scale(1)'; }, 50);
+      } else {
+        const lbVideo = document.getElementById('lightboxVideo');
+        if (lbVideo) { lbVideo.pause(); lbVideo.style.display = 'none'; }
+        const img = document.getElementById('lightboxImg');
+        img.style.display = 'block';
+        img.src = photo.url;
+      }
+
+      document.getElementById('lightboxInfo').textContent = `${String(photoIdx + 1).padStart(2, '0')} / ${String(p.photos.length).padStart(2, '0')} • ${photo.caption} • ${photo.location}`;
+      lb.classList.add('active');
+      updatePhoto(chapterIdx, photoIdx);
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('active');
+      const lbVideo = document.getElementById('lightboxVideo');
+      if (lbVideo) { lbVideo.pause(); }
+    }
+
+    // ========== HOVER PREVIEW ==========
+    function previewPhoto(chapterIdx, photoIdx) {
+      const p = projects[chapterIdx];
+      const photo = p.photos[photoIdx];
+      const img = document.getElementById('photoImg');
+      const video = document.getElementById('photoVideo');
+      const badge = document.getElementById('videoBadge');
+      const isVideo = photo.type === 'video' && photo.videoUrl;
+
+      if (isVideo) {
+        img.style.display = 'none';
+        video.style.display = 'block';
+        badge.style.display = 'block';
+        video.style.transition = 'opacity 0.2s, transform 0.4s cubic-bezier(0.4,0,0.2,1)';
+        video.style.opacity = '0';
+        video.style.transform = 'scale(1.04)';
+        setTimeout(() => {
+          video.src = photo.videoUrl;
+          video.play();
+          video.style.opacity = '1';
+          setTimeout(() => { video.style.transform = 'scale(1)'; }, 50);
+        }, 150);
+      } else {
+        video.style.display = 'none';
+        video.pause();
+        badge.style.display = 'none';
+        img.style.display = 'block';
+        img.style.transition = 'opacity 0.2s, transform 0.4s cubic-bezier(0.4,0,0.2,1)';
+        img.style.opacity = '0';
+        img.style.transform = 'scale(1.04)';
+        setTimeout(() => {
+          img.src = photo.url;
+          img.style.opacity = '1';
+          setTimeout(() => { img.style.transform = 'scale(1)'; }, 50);
+        }, 150);
+      }
+
+      document.getElementById('photoTime').textContent = photo.time;
+      document.getElementById('photoLocation').textContent = photo.location;
+      document.getElementById('photoCaption').textContent = photo.caption;
+
+      document.querySelectorAll('#thumbStrip .thumb-frame').forEach((t, i) => {
+        t.classList.toggle('active', i === photoIdx);
+      });
+    }
+
+    function restorePhoto(chapterIdx) {
+      updatePhoto(chapterIdx, currentPhotoIndex);
+    }
+
+    function updatePhoto(chapterIdx, photoIdx) {
+      const p = projects[chapterIdx];
+      const photo = p.photos[photoIdx];
+      currentPhotoIndex = photoIdx;
+
+      const img = document.getElementById('photoImg');
+      const video = document.getElementById('photoVideo');
+      const badge = document.getElementById('videoBadge');
+      const isVideo = photo.type === 'video' && photo.videoUrl;
+
+      if (isVideo) {
+        img.style.display = 'none';
+        video.style.display = 'block';
+        badge.style.display = 'block';
+        video.style.transition = 'opacity 0.4s, transform 0.5s';
+        video.style.opacity = '0';
+        video.style.transform = 'scale(1.04)';
+        setTimeout(() => {
+          video.src = photo.videoUrl;
+          video.play();
+          video.style.opacity = '1';
+          setTimeout(() => { video.style.transform = 'scale(1)'; }, 50);
+        }, 200);
+      } else {
+        video.style.display = 'none';
+        video.pause();
+        video.src = '';
+        badge.style.display = 'none';
+        img.style.display = 'block';
+        img.style.transition = 'opacity 0.4s, transform 0.5s';
+        img.style.opacity = '0';
+        img.style.transform = 'scale(1.04)';
+        setTimeout(() => {
+          img.src = photo.url;
+          img.style.opacity = '1';
+          setTimeout(() => { img.style.transform = 'scale(1)'; }, 50);
+        }, 200);
+      }
+
+      document.getElementById('photoTime').textContent = photo.time;
+      document.getElementById('photoLocation').textContent = photo.location;
+      document.getElementById('photoCaption').textContent = photo.caption;
+      document.getElementById('exposureCount').textContent = `${String(photoIdx + 1).padStart(2, '0')} / ${String(p.photos.length).padStart(2, '0')} EXPOSURES`;
+      document.getElementById('contactPlace').textContent = photo.caption;
+      document.getElementById('contactSheetLabel').textContent = `CONTACT SHEET ${String(chapterIdx + 1).padStart(2, '0')}`;
+
+      document.querySelectorAll('#thumbStrip .thumb-frame').forEach((t, i) => {
+        t.classList.toggle('active', i === photoIdx);
+      });
+
+      const dotsEl = document.getElementById('photoDots');
+      dotsEl.innerHTML = p.photos.map((_, i) => `
+        <div class="photo-dot ${i === photoIdx ? 'active' : ''}" onclick="updatePhoto(${chapterIdx}, ${i})"></div>
+      `).join('');
+    }
+
+    // ========== KEYBOARD ==========
+    document.addEventListener('keydown', (e) => {
+      // Lightbox escape
+      if (e.key === 'Escape' && document.getElementById('lightbox').classList.contains('active')) {
+        closeLightbox();
+        return;
+      }
+      if (currentChapter >= 0) {
+        if (e.key === 'Escape') goBack();
+        if (e.key === 'ArrowRight') nextChapter();
+        if (e.key === 'ArrowLeft') prevChapter();
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          const p = projects[currentChapter];
+          if (currentPhotoIndex < p.photos.length - 1) updatePhoto(currentChapter, currentPhotoIndex + 1);
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (currentPhotoIndex > 0) updatePhoto(currentChapter, currentPhotoIndex - 1);
+        }
+      }
+    });
+
+    // ========== EDIT MODE ==========
+    let editMode = false;
+    let editingProjectIdx = -1;
+    let pendingUploadTarget = null; // { type: 'cover'|'photo', projectIdx, photoIdx }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      document.body.classList.toggle('edit-mode', editMode);
+      const btn = document.getElementById('editToggle');
+      btn.classList.toggle('active', editMode);
+      btn.textContent = editMode ? '✎ 编辑中' : '✎ 编辑';
+      if (!editMode) {
+        document.getElementById('editPanel').classList.remove('open');
+      }
+    }
+
+    function openEditPanel(projectIdx) {
+      editingProjectIdx = projectIdx;
+      const p = projects[projectIdx];
+      const panel = document.getElementById('editPanel');
+      const content = document.getElementById('editPanelContent');
+
+      content.innerHTML = `
+        <label>项目名称</label>
+        <input id="ep_name" value="${p.name}" />
+        <label>中文名</label>
+        <input id="ep_nameCn" value="${p.nameCn}" />
+        <label>日期</label>
+        <input id="ep_date" value="${p.date}" />
+        <label>标签</label>
+        <input id="ep_tag" value="${p.tag}" />
+        <label>描述</label>
+        <input id="ep_desc" value="${p.desc}" />
+        <label>引语</label>
+        <textarea id="ep_quote">${p.quote}</textarea>
+        <label>封面图片</label>
+        <div class="photo-edit-item">
+          <img class="photo-thumb-preview" src="${p.coverUrl}" />
+          <button class="upload-btn" onclick="startUpload('cover', ${projectIdx}, -1)">⬆ 上传封面</button>
+        </div>
+        <label>作品图片/视频</label>
+        ${p.photos.map((ph, i) => `
+          <div class="photo-edit-item">
+            <img class="photo-thumb-preview" src="${ph.url}" />
+            <label style="margin-top:0">说明文字</label>
+            <input id="ep_photo_caption_${i}" value="${ph.caption || ''}" />
+            <button class="upload-btn" onclick="startUpload('photo', ${projectIdx}, ${i})">⬆ 上传${ph.type === 'video' ? '视频' : '图片'}</button>
+          </div>
+        `).join('')}
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveEdit()">保存</button>
+          <button class="btn" onclick="closeEditPanel()">取消</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn danger" onclick="resetProject(${projectIdx})">恢复默认</button>
+        </div>
+      `;
+      panel.classList.add('open');
+    }
+
+    function closeEditPanel() {
+      document.getElementById('editPanel').classList.remove('open');
+      editingProjectIdx = -1;
+    }
+
+    function startUpload(type, projectIdx, photoIdx) {
+      pendingUploadTarget = { type, projectIdx, photoIdx };
+      const input = document.getElementById('fileInput');
+      input.value = '';
+      input.click();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file || !pendingUploadTarget) return;
+
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const dataUrl = ev.target.result;
+        const { type, projectIdx, photoIdx } = pendingUploadTarget;
+
+        if (type === 'cover') {
+          projects[projectIdx].coverUrl = dataUrl;
+          // Update preview in edit panel
+          const preview = document.querySelector('#editPanel .photo-thumb-preview');
+          if (preview) preview.src = dataUrl;
+        } else if (type === 'photo') {
+          const isVideo = file.type.startsWith('video/');
+          projects[projectIdx].photos[photoIdx].url = dataUrl;
+          if (isVideo) {
+            projects[projectIdx].photos[photoIdx].type = 'video';
+            projects[projectIdx].photos[photoIdx].videoUrl = dataUrl;
+          } else {
+            projects[projectIdx].photos[photoIdx].type = 'image';
+            projects[projectIdx].photos[photoIdx].videoUrl = '';
+          }
+          // Update preview in edit panel
+          const items = document.querySelectorAll('#editPanel .photo-edit-item');
+          if (items[photoIdx + 1]) { // +1 because first item is cover
+            const img = items[photoIdx + 1].querySelector('.photo-thumb-preview');
+            if (img) img.src = dataUrl;
+          }
+        }
+
+        // Save to localStorage
+        saveToStorage();
+        // Rebuild cover to reflect changes
+        buildCover();
+        // If chapter is open, refresh it
+        if (currentChapter === projectIdx) {
+          openChapter(projectIdx);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function saveEdit() {
+      if (editingProjectIdx < 0) return;
+      const p = projects[editingProjectIdx];
+      p.name = document.getElementById('ep_name').value;
+      p.nameCn = document.getElementById('ep_nameCn').value;
+      p.date = document.getElementById('ep_date').value;
+      p.tag = document.getElementById('ep_tag').value;
+      p.desc = document.getElementById('ep_desc').value;
+      p.quote = document.getElementById('ep_quote').value;
+      p.photos.forEach((ph, i) => {
+        const capEl = document.getElementById(`ep_photo_caption_${i}`);
+        if (capEl) ph.caption = capEl.value;
+      });
+
+      saveToStorage();
+      buildCover();
+      if (currentChapter === editingProjectIdx) {
+        openChapter(editingProjectIdx);
+      }
+      closeEditPanel();
+    }
+
+    function resetProject(idx) {
+      // Remove saved data for this project
+      const saved = JSON.parse(localStorage.getItem('portfolio_projects') || '{}');
+      delete saved[idx];
+      localStorage.setItem('portfolio_projects', JSON.stringify(saved));
+      // Reload page to reset
+      location.reload();
+    }
+
+    // ========== LOCAL STORAGE ==========
+    function saveToStorage() {
+      const data = {};
+      projects.forEach((p, i) => {
+        const saved = {};
+        if (p.name) saved.name = p.name;
+        if (p.nameCn) saved.nameCn = p.nameCn;
+        if (p.date) saved.date = p.date;
+        if (p.tag) saved.tag = p.tag;
+        if (p.desc) saved.desc = p.desc;
+        if (p.quote) saved.quote = p.quote;
+        if (p.coverUrl) saved.coverUrl = p.coverUrl;
+        saved.photos = p.photos.map(ph => ({
+          url: ph.url,
+          caption: ph.caption,
+          location: ph.location,
+          time: ph.time,
+          type: ph.type || 'image',
+          videoUrl: ph.videoUrl || ''
+        }));
+        data[i] = saved;
+      });
+      try {
+        localStorage.setItem('portfolio_projects', JSON.stringify(data));
+      } catch(e) {
+        console.warn('localStorage full, images too large');
+      }
+    }
+
+    function loadFromStorage() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('portfolio_projects') || '{}');
+        for (const [idx, data] of Object.entries(saved)) {
+          const i = parseInt(idx);
+          if (projects[i]) {
+            Object.assign(projects[i], data);
+          }
+        }
+      } catch(e) {}
+    }
+
+    // ========== INIT ==========
+    loadFromStorage();
+    buildCover();
+
+    // Edit mode click handlers
+    document.getElementById('cover').addEventListener('click', function(e) {
+      if (!editMode) return;
+      const row = e.target.closest('.index-row');
+      if (row) {
+        const idx = parseInt(row.dataset.idx);
+        openEditPanel(idx);
+      }
+    });
+
+    document.getElementById('chapter').addEventListener('click', function(e) {
+      if (!editMode) return;
+      // Click on photo main area or thumb to edit
+      const thumb = e.target.closest('.thumb-frame');
+      if (thumb) {
+        openEditPanel(currentChapter);
+        return;
+      }
+      const photoMain = e.target.closest('.photo-main');
+      if (photoMain) {
+        openEditPanel(currentChapter);
+      }
+    });
+  </script>
+</body>
+</html>
