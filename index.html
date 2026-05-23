@@ -692,14 +692,23 @@
       font-size: 72px;
       font-weight: 900;
       line-height: 1;
-      color: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.35);
       letter-spacing: -3px;
+      transition: opacity 0.3s, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .photo-number .num-total {
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 1px;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.5);
+    }
+    .photo-number.animate .num-big {
+      animation: numPopIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes numPopIn {
+      0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+      60% { opacity: 1; transform: translateY(-4px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* Thumbnail strip - film style */
@@ -1937,6 +1946,12 @@
       document.getElementById('photoCaption').textContent = photo.caption;
       document.getElementById('photoNumBig').textContent = String(photoIdx + 1).padStart(2, '0');
       document.getElementById('photoNumTotal').textContent = '/ ' + String(projects[chapterIdx].photos.length).padStart(2, '0') + ' EXPOSURES';
+
+      // Trigger number animation
+      const numEl = document.getElementById('photoNumber');
+      numEl.classList.remove('animate');
+      void numEl.offsetWidth; // force reflow
+      numEl.classList.add('animate');
 
       document.querySelectorAll('#thumbStrip .thumb-frame').forEach((t, i) => {
         t.classList.toggle('active', i === photoIdx);
