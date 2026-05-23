@@ -91,7 +91,7 @@
 
     /* Left Panel */
     .cover-left {
-      width: 55%;
+      width: 40%;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -242,7 +242,7 @@
 
     /* ========== Right Panel - Film Strip ========== */
     .cover-right {
-      width: 45%;
+      width: 60%;
       height: 100%;
       background: var(--dark);
       position: relative;
@@ -395,7 +395,7 @@
 
     /* Chapter left */
     .chapter-left {
-      width: 50%;
+      width: 40%;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -551,12 +551,65 @@
 
     /* ========== Chapter Right ========== */
     .chapter-right {
-      width: 50%;
+      width: 60%;
       height: 100%;
       background: var(--dark);
       position: relative;
       display: flex;
       flex-direction: column;
+    }
+
+    /* Top chapter indicator bar */
+    .chapter-indicator {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+    }
+    .indicator-dot {
+      width: 24px; height: 3px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .indicator-dot.active {
+      background: var(--orange);
+      width: 32px;
+    }
+    .indicator-dot:hover {
+      background: rgba(255,255,255,0.4);
+    }
+
+    /* Entry animation */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    #chapter.visible .chapter-left {
+      animation: fadeInLeft 0.6s ease-out;
+    }
+    #chapter.visible .chapter-right {
+      animation: fadeInRight 0.6s ease-out;
+    }
+    #yearPage.visible .year-left {
+      animation: fadeInLeft 0.5s ease-out;
+    }
+    #yearPage.visible .year-right {
+      animation: fadeInRight 0.5s ease-out;
     }
     .chapter-right-top {
       flex: 1;
@@ -624,6 +677,29 @@
       font-size: 13px;
       color: rgba(255,255,255,0.6);
       text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    }
+
+    /* Photo number - large */
+    .photo-number {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      text-align: right;
+      z-index: 2;
+    }
+    .photo-number .num-big {
+      font-family: var(--sans);
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: -3px;
+    }
+    .photo-number .num-total {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
     }
 
     /* Thumbnail strip - film style */
@@ -1245,7 +1321,7 @@
       opacity: 1;
     }
     .year-left {
-      width: 55%; height: 100%;
+      width: 40%; height: 100%;
       display: flex; flex-direction: column;
       padding: 48px 56px;
       background: linear-gradient(180deg, #0a0a0b 0%, #0d0f18 25%, #121830 50%, #1a2a50 75%, #2a4a7a 100%);
@@ -1265,7 +1341,7 @@
       margin-bottom: 8px;
     }
     .year-title h1 {
-      font-family: var(--sans); font-size: 80px; font-weight: 900;
+      font-family: var(--sans); font-size: 120px; font-weight: 900;
       letter-spacing: -4px; line-height: 0.9;
       color: var(--white);
     }
@@ -1282,7 +1358,7 @@
       margin-top: 32px; overflow-y: auto;
     }
     .year-right {
-      width: 45%; height: 100%;
+      width: 60%; height: 100%;
       background: var(--dark);
       position: relative; overflow: hidden;
       display: flex; flex-direction: column;
@@ -1429,6 +1505,7 @@
     </div>
 
     <div class="chapter-right">
+      <div class="chapter-indicator" id="chapterIndicator"></div>
       <div class="chapter-right-top">
         <div class="photo-main" id="photoMain">
           <img id="photoImg" src="" alt="" />
@@ -1436,6 +1513,10 @@
           <div class="photo-time" id="photoTime"></div>
           <div class="photo-location" id="photoLocation"></div>
           <div class="photo-caption" id="photoCaption"></div>
+          <div class="photo-number" id="photoNumber">
+            <div class="num-big" id="photoNumBig">01</div>
+            <div class="num-total" id="photoNumTotal">/ 03 EXPOSURES</div>
+          </div>
           <div class="video-badge" id="videoBadge" style="display:none;">▶ 视频</div>
         </div>
         <div class="thumb-strip" id="thumbStrip"></div>
@@ -1709,6 +1790,12 @@
       document.getElementById('chapterQuote').textContent = p.quote;
       document.getElementById('stampYear').textContent = '2026';
 
+      // Update chapter indicator
+      const indicator = document.getElementById('chapterIndicator');
+      indicator.innerHTML = projects.map((p, i) => `
+        <div class="indicator-dot ${i === idx ? 'active' : ''}" onclick="openChapter(${i})"></div>
+      `).join('');
+
       // Build thumbnail strip - film style
       const thumbStrip = document.getElementById('thumbStrip');
       thumbStrip.innerHTML = p.photos.map((ph, i) => `
@@ -1848,6 +1935,8 @@
       document.getElementById('photoTime').textContent = photo.time;
       document.getElementById('photoLocation').textContent = photo.location;
       document.getElementById('photoCaption').textContent = photo.caption;
+      document.getElementById('photoNumBig').textContent = String(photoIdx + 1).padStart(2, '0');
+      document.getElementById('photoNumTotal').textContent = '/ ' + String(projects[chapterIdx].photos.length).padStart(2, '0') + ' EXPOSURES';
 
       document.querySelectorAll('#thumbStrip .thumb-frame').forEach((t, i) => {
         t.classList.toggle('active', i === photoIdx);
