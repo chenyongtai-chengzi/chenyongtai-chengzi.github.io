@@ -1383,7 +1383,7 @@
   <div id="yearPage">
     <div class="year-left">
       <div class="year-top-bar">
-        <span class="year-back-btn" onclick="closeYearPage()">← 返回</span>
+        <span class="year-back-btn" onclick="goBackToCover()">← 返回</span>
         <span class="roll-label" id="yearRollLabel">ROLL 01 • 2026</span>
       </div>
       <div class="year-title">
@@ -1742,13 +1742,20 @@
     function goBack() {
       currentChapter = -1;
       document.getElementById('chapter').classList.remove('visible');
-      // If year page is open, go back to year page; otherwise go to cover
+      // If year page is open, go back to year page
       if (document.getElementById('yearPage').classList.contains('visible')) {
-        // Already on year page, just close chapter
+        // Just close chapter, stay on year page
       } else {
+        // No year page, go back to cover
         document.getElementById('cover').classList.remove('hidden');
       }
       // Mobile: scroll to top
+      if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBackToCover() {
+      document.getElementById('yearPage').classList.remove('visible');
+      document.getElementById('cover').classList.remove('hidden');
       if (window.innerWidth <= 900) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
