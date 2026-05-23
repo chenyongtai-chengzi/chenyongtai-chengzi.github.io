@@ -692,9 +692,10 @@
       font-size: 72px;
       font-weight: 900;
       line-height: 1;
-      color: rgba(255,255,255,0.35);
+      color: var(--chapter-accent, rgba(255,255,255,0.35));
       letter-spacing: -3px;
-      transition: opacity 0.3s, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.3s, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s;
+      text-shadow: 0 0 40px var(--chapter-accent, transparent);
     }
     .photo-number .num-total {
       font-family: var(--mono);
@@ -1783,6 +1784,9 @@
 
       const left = document.getElementById('chapterLeft');
       left.style.background = p.color;
+
+      // Set chapter accent color for photo number
+      document.documentElement.style.setProperty('--chapter-accent', p.color);
 
       document.getElementById('chapterNum').textContent = `CHAPTER ${String(idx + 1).padStart(2, '0')} • ${p.tag}`;
       document.getElementById('chapterTitle').textContent = p.name;
